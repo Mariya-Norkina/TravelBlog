@@ -1,0 +1,101 @@
+<div class="comments-section">
+  <div *ngIf="showErrorAlert" class="error-alert">
+    ⚠ {{ errorMessage }}
+  </div>
+
+  <h3>Комментарии ({{ post.comments?.length ?? 0 }})</h3>
+
+  <div class="comments-list" *ngIf="post.comments && post.comments.length > 0">
+    <div class="comment-item" *ngFor="let comment of post.comments">
+      
+      <ng-container *ngIf="editingCommentId !== comment.id; else editMode">
+        <div class="comment-top-row">
+          <div class="comment-user">{{ comment.username }}</div>
+          
+          <div class="comment-actions">
+            <!-- КНОПКА ДОБАВЛЕНИЯ РЕАКЦИИ (Видна всем авторизованным пользователям) -->
+            <div class="reaction-picker-container" *ngIf="authService.isLoggedIn()">
+                <!-- Добавлен клик (click)="togglePicker($event, comment.id)" -->
+                <button type="button" 
+                 class="comment-action-btn add-reaction-trigger" 
+                 title="Поставить реакцию"
+                 (click)="togglePicker($event, comment.id)">
+                ☺
+                </button>
+  
+                <!-- Добавлен класс привязки к состоянию клика [class.visible] -->
+             <div class="reactions-picker" [class.visible]="activePickerCommentId === comment.id">
+                <button type="button" 
+                 *ngFor="let emoji of availableEmojis" 
+                 class="picker-emoji-btn"
+                 [class.user-selected]="isEmojiSelectedByUser(comment, emoji)"
+                 (click)="toggleReaction(comment, emoji)">
+                 {{ emoji }}
+                </button>
+             </div>
+            </div>
+
+            <!-- Управление комментариями автора -->
+            <ng-container *ngIf="authService.isLoggedIn() && authService.currentUser?.username === comment.username">
+              <button type="button" class="comment-action-btn edit-icon-btn" title="Редактировать" (click)="startEditComment(comment)">✎</button>
+              <button type="button" class="comment-action-btn delete-icon-btn" title="Удалить" (click)="deleteComment(comment.id)">🗑</button>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="comment-text">{{ comment.text }}</div>
+
+        <!-- СТРОКА С УЖЕ ОСТАВЛЕННЫМИ РЕАКЦИЯМИ ПОД ТЕКСТОМ КОММЕНТАРИЯ -->
+        <div class="active-reactions-row" *ngIf="getActiveReactions(comment).length > 0">
+          <button type="button" 
+                  *ngFor="let react of getActiveReactions(comment)" 
+                  class="active-reaction-badge"
+                  [class.my-reaction]="isEmojiSelectedByUser(comment, react.emoji)"
+                  (click)="toggleReaction(comment, react.emoji)"
+                  [title]="isEmojiSelectedByUser(comment, react.emoji) ? 'Убрать реакцию' : 'Тоже выбрать этот эмодзи'">
+            <span class="react-emoji">{{ react.emoji }}</span>
+            <!-- Счетчик отображается, только если количество реакций две и больше (react.count >= 2) -->
+            <span class="react-count" *ngIf="react.count >= 2">({{ react.count }})</span>
+          </button>
+        </div>
+
+        <div class="comment-bottom-info">
+          <span *ngIf="comment.isEdited" class="edited-mark">ред.</span>
+          <div class="comment-date">{{ comment.date }}</div>
+        </div>
+      </ng-container>
+
+      <ng-template #editMode>
+        <div class="comment-edit-form">
+          <textarea [(ngModel)]="editedCommentText" class="comment-edit-textarea" rows="2"></textarea>
+          <div class="comment-edit-buttons">
+            <button type="button" class="comment-save-btn" (click)="saveEditedComment(comment.id)">Сохранить</button>
+            <button type="button" class="comment-cancel-btn" (click)="cancelEditComment()">Отмена</button>
+          </div>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+  
+  <div class="no-comments" *ngIf="!post.comments || post.comments.length === 0">
+    Комментариев пока нет. Напишите первый!
+  </div>
+
+  <div class="comment-form-container" *ngIf="authService.isLoggedIn()">
+    <label for="commentInput">Оставить комментарий</label>
+    <div class="comment-input-row">
+      <textarea id="commentInput" [(ngModel)]="newCommentText" placeholder="Напишите ваш комментарий..." rows="2"></textarea>
+      <button type="button" class="publish-comment-btn" (click)="submitComment()">Опубликовать</button>
+    </div>
+  </div>
+
+  <div class="comment-auth-prompt" *ngIf="!authService.isLoggedIn()">
+    <p>
+      <span class="auth-link" (click)="goToAuth('/register')">Войдите</span> 
+      или 
+      <span class="auth-link" (click)="goToAuth('/register')">зарегистрируйтесь</span>, 
+      чтобы оставить комментарий.
+    </p>
+  </div>
+</div>

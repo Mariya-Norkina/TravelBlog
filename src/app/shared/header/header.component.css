@@ -1,0 +1,30 @@
+header {
+      background-color: #ece0d4;
+      color: rgb(43, 66, 9);
+      padding: 1rem;
+    }
+
+.el {
+  color: rgb(60, 96, 6);
+  margin-right: 2%;
+  font-size: 1.8em;
+  font-weight: 500;
+}
+
+header a {
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .el {
+    display: inline-block; 
+    width: auto;  
+    margin-right: 4%;
+  }
+
+  header {
+      text-align: center;
+      gap: 7%;
+      white-space: nowrap; 
+    }
+}

@@ -1,0 +1,187 @@
+<div class="form">
+  <!-- ===== УВЕДОМЛЕНИЕ ОБ УСПЕШНОЙ РЕГИСТРАЦИИ И ОПЕРАЦИЯХ ===== -->
+  <div *ngIf="showSuccessMessage" class="success-alert">
+    {{ successMessage }}
+  </div>
+
+  <!-- ГЛАВНЫЙ БЛОК РАЗДЕЛЕНИЯ НА БОКОВОЕ МЕНЮ И КОНТЕНТ -->
+  <div class="account-layout">
+
+    <input type="file" #avatarInput style="display: none;" (change)="onAvatarChange($event)" accept="image/*" />
+    
+    <!-- БОКОВОЕ МЕНЮ НАВИГАЦИИ -->
+    <aside class="sidebar">
+      <div class="profile-header">
+        <div class="avatar-container sidebar-avatar">
+          <img [src]="avatarUrl" class="avatar-img" alt="Аватар" />
+        </div>
+        <h2 class="profile-username">{{ authService.currentUser?.username }}</h2>
+      </div>
+
+      <nav class="menu-links">
+        <button type="button" class="menu-btn" [class.active]="currentTab === 'profile'" (click)="setTab('profile')">
+          Личные данные
+        </button>
+        <button type="button" class="menu-btn" [class.active]="currentTab === 'create'" (click)="setTab('create')">
+          Создать пост
+        </button>
+        <button type="button" class="menu-btn" [class.active]="currentTab === 'liked'" (click)="setTab('liked')">
+          Управление постами
+        </button>
+      </nav>
+
+      <button class="logout-btn delete-button" (click)="logout()">
+        Выйти
+      </button>
+    </aside>
+    <main class="content-area">
+      <section *ngIf="currentTab === 'profile'">
+        <h2>Личные данные</h2>
+        <div class="profile-info-box">
+          <div class="avatar-center-wrapper">
+            <div class="avatar-container main-profile-avatar" (click)="triggerAvatarUpload($event)">
+              <img [src]="avatarUrl" class="avatar-img" alt="Аватар пользователя">
+              
+              <!-- Слой поверх картинки при наведении -->
+              <div class="avatar-overlay">
+                <!-- Если геттер возвращает true (аватарка кастомная) — показываем корзину -->
+                <button *ngIf="hasCustomAvatar" 
+                        class="avatar-delete-icon-btn" 
+                        (click)="removeAvatar($event)" 
+                        title="Удалить аватарку">
+                  🗑️
+                </button>
+
+                <!-- Если аватарки нет — показываем карандаш -->
+                <span *ngIf="!hasCustomAvatar" 
+                      class="pencil-icon" 
+                      title="Загрузить аватарку">
+                  ✏
+                </span>
+              </div>
+            </div>
+          </div>
+          <input #avatarInput type="file" (change)="onAvatarChange($event)" accept="image/*" style="display: none;">  
+
+          <p>Вы вошли как: <strong>{{ authService.currentUser?.username }}</strong></p>
+          <p>Ваш уникальный ID: <span class="profile-subtitle">{{ authService.currentUser?.id || 'Не указан' }}</span></p>
+            <div style="margin-top: 25px;">
+              <button type="button" class="delete-account-btn" (click)="changePassword()">
+              Изменить текущий пароль
+              </button>
+            </div>
+            <div class="delete-profile-container" style="margin-top: 30px; padding-top: 20px;">
+              <!-- <p class="your" style="color: #bc4747; margin-bottom: 10px;">Внимание! Действие необратимо (да неужели блять):</p> -->
+              <button type="button" class="delete-account-btn" id="delete-button" (click)="deleteProfile()">
+              Удалить профиль
+              </button>
+            </div>
+        </div>
+      </section>
+
+      <!-- РАЗДЕЛ: Создать пост (Вызов очищенного вынесенного компонента) -->
+      <section *ngIf="currentTab === 'create'" class="create-post-section">
+        <app-create-post (postCreated)="onPostCreated()"></app-create-post>
+      </section>
+
+      <!-- РАЗДЕЛ: Понравившееся -->
+      <section *ngIf="currentTab === 'liked'">
+  <!-- Блок 1: Опубликованные пользователем посты -->
+  <h3 class="your">Ваши посты</h3>
+  <div *ngIf="userPosts.length === 0" class="empty-posts-message">
+    У вас пока нет постов
+  </div>
+  
+  <div class="posts-container user-posts-margin">
+    <!-- Изменили массив на paginatedUserPosts -->
+    <app-post-card 
+      *ngFor="let post of paginatedUserPosts"
+      [post]="post"
+      [isLoggedIn]="true"
+      [isInProfile]="true"
+      [isLiked]="hasUserLiked(post)"
+      [currentUsername]="authService.currentUser?.username"
+      (detail)="openPost($event)"
+      (like)="toggleLike($event)"
+      (edit)="openEditModal($event)"
+      (delete)="deletePost($event)"
+      [showAdminActions]="true">
+    </app-post-card>
+  </div>
+
+  <!-- Стрелочки пагинации для Блока 1 (появляются, только если постов больше 3) -->
+  <div *ngIf="userPosts.length > cabinetPageSize" class="pagination-panel">
+    <button class="page-arrow" (click)="goToPrevUserPage()" [disabled]="userPostsPage === 1">🡨</button>
+    <span class="page-info">Страница <b>{{ userPostsPage }}</b> из <b>{{ totalUserPostsPages }}</b></span>
+    <button class="page-arrow" (click)="goToNextUserPage()" [disabled]="userPostsPage === totalUserPostsPages">🡪</button>
+  </div>
+
+  <!-- Блок 2: Оцененные (лайкнутые) посты -->
+  <h3>Посты, которые вам понравились</h3>
+  <div *ngIf="likedPosts.length === 0" class="empty-posts-message">Вы пока не лайкнули ни один пост.</div>
+  
+  <div class="posts-container">
+    <!-- Изменили массив на paginatedLikedPosts и исправили синтаксис событий -->
+    <app-post-card 
+      *ngFor="let post of paginatedLikedPosts"
+      [post]="post"
+      [isLoggedIn]="true"
+      [isInProfile]="true"
+      [currentUsername]="authService.currentUser?.username"
+      [isLiked]="true"
+      (detail)="openPost($event)"
+      (like)="toggleLike($event)"
+      (edit)="openEditModal($event)"
+      (delete)="deletePost($event)">
+    </app-post-card>
+  </div>
+
+  <!-- Стрелочки пагинации для Блока 2 (появляются, только если постов больше 3) -->
+  <div *ngIf="likedPosts.length > cabinetPageSize" class="pagination-panel">
+    <button class="page-arrow" (click)="goToPrevLikedPage()" [disabled]="likedPostsPage === 1">🡨</button>
+    <span class="page-info">Страница <b>{{ likedPostsPage }}</b> из <b>{{ totalLikedPostsPages }}</b></span>
+    <button class="page-arrow" (click)="goToNextLikedPage()" [disabled]="likedPostsPage === totalLikedPostsPages">🡪</button>
+  </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- ===== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ===== -->
+<div class="edit-modal-overlay" *ngIf="editingPost">
+  <div class="edit-modal-window">
+    <button class="close-button" (click)="closeEditModal()">×</button>
+    <h2>Редактировать пост</h2>
+
+    <form [formGroup]="editForm" (ngSubmit)="submitEdit()">
+      <input type="text" formControlName="title" placeholder="Заголовок" />
+      <textarea formControlName="description" placeholder="Описание"></textarea>
+      <input type="date" formControlName="date" />
+
+      <!-- УПРАВЛЕНИЕ ОБЛОЖКОЙ ПОСТА -->
+      <label class="image-upload-label">Обложка поста:</label>
+      <div class="image-preview" *ngIf="editPhotoPreviewUrl">
+        <img [src]="editPhotoPreviewUrl" alt="Обложка" />
+      </div>
+      <input type="file" #editPhotoInput (change)="onEditFileChange($event)" accept="image/*" />
+
+      <!-- УПРАВЛЕНИЕ ГАЛЕРЕЕЙ КАРТИНОК -->
+      <label class="image-upload-label">Галерея фотографий:</label>
+      
+      <!-- Сетка предпросмотра картинок галереи с кнопками удаления -->
+      <div class="edit-gallery-preview" *ngIf="editAdditionalPhotosUrls.length > 0">
+        <div class="gallery-item-wrapper" *ngFor="let imgUrl of editAdditionalPhotosUrls; let i = index">
+          <img [src]="imgUrl" alt="Фото галереи" />
+          <button type="button" class="remove-gallery-img-btn" (click)="removeEditGalleryImage(i)">×</button>
+        </div>
+      </div>
+
+      <!-- Кнопка загрузки для новых картинок в галерею -->
+      <input type="file" #editGalleryInput (change)="onEditGalleryChange($event)" accept="image/*" multiple />
+
+      <button type="submit" [disabled]="editForm.invalid">Сохранить</button>
+    </form>
+  </div>
+</div>
+  
+</div>

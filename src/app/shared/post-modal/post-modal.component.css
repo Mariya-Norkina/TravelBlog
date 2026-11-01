@@ -1,0 +1,465 @@
+@font-face {
+  font-family: 'MyCustomFont'; 
+  src: url('assets/fonts/ofont.ru_KistyAC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.modal-overlay {
+  position: relative;        /* Убрали fixed, чтобы страница могла скроллиться */
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;   /* Разрешает контенту расти вниз */
+  background: none;          /* Убрали темную прозрачную подложку */
+  z-index: 1;
+  padding: 40px 20px;        /* Аккуратные отступы от краев экрана */
+  box-sizing: border-box;
+}
+
+.modal-window {
+  background-color: transparent; /* Полностью убираем бежевый фон, делая контейнер прозрачным */
+  width: 100%;
+  max-width: 1100px;         
+  border-radius: 12px;       
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;              /* Убираем тень, так как у прозрачного блока она выглядит некорректно */
+  max-height: none;          
+  overflow: visible;     
+}
+
+.close-button {
+  position: relative;
+  align-self: flex-start;  /* Выравниваем по левому/правому краю в зависимости от разметки */
+  margin-bottom: 3%;     /* Создаем аккуратный зазор до начала обложки */
+  top: auto;
+  right: auto;
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #55652d;
+  z-index: 100;
+  line-height: 1;
+  padding: 5px 0;
+  transition: transform 0.2s;
+}
+
+.close-button:hover {
+  color: #8eaf4c; 
+}
+
+.post-image {
+  width: 100%;
+  height: auto; 
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.post-image img {
+  max-width: 70%;         /* ГАРАНТИРУЕТ, что картинка сожмется и полностью влезет по ширине */
+  width: auto;             /* Отменяем жесткое растягивание на 100% ширины */
+  height: auto; 
+  display: block;
+  border-radius: 10px;  
+}
+
+.post-image.no-image {
+  background-color: #ece0d4;
+  align-items: center;
+  height: 220px;  
+}
+
+.post-image.no-image::before {
+  content: "🗺️";
+  font-size: 3em;
+  opacity: 0.6;
+}
+
+.post-content {
+  padding: 20px;
+  text-align: center;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.post-title {
+  font-family: 'MyCustomFont', Arial, sans-serif;
+  color: #1f310b;
+  font-size: 2.2em;
+  margin-bottom: 10px;
+}
+
+.star {
+  color: rgb(122, 97, 24);
+  font-size: 2.3em; 
+  margin: 0;
+}
+
+.post-author {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #1f310b;
+}
+
+.post-description {
+  color: #8eaf4c;
+  max-width: 75%;
+  margin: 0 auto 25px auto;
+  line-height: 1.6;
+  font-size: 1.3em;
+  text-align: justify;
+}
+
+.post-gallery-section {
+  margin: 30px auto 0 auto;
+  padding-top: 20px;
+  border-top: 2px dashed #decca5;
+  max-width: 80%;
+}
+
+.post-gallery-section h3 {
+  font-family: Arial, sans-serif;
+  color: #58710e;
+  font-size: 1.4em;
+  margin-bottom: 15px;
+}
+
+.post-gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.gallery-image-wrapper {
+  height: 15dvh;
+  width: 120px;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+
+.gallery-image-wrapper:hover {
+  transform: scale(1.04);
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.full-image-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+}
+
+.full-image-overlay.active {
+  opacity: 1;
+}
+
+.full-image-overlay.active .full-size-img {
+  animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.full-size-img {
+  max-width: 80vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  cursor: default;
+  transform: scale(0.7);
+}
+
+.close-full-image-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 38px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.2s;
+  line-height: 1;
+  z-index: 1200;
+}
+
+.close-full-image-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 70px;
+  font-family: serif;
+  cursor: pointer;
+  opacity: 0.4;
+  padding: 20px;
+  z-index: 1150;
+  user-select: none;
+  line-height: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-btn:hover {
+  opacity: 1;
+  color: #ffd756;
+}
+
+.prev-btn {
+  left: 30px;
+}
+.prev-btn:hover {
+  transform: translateY(-50%) scale(1.1) translateX(-5px);
+}
+
+.next-btn {
+  right: 30px;
+}
+.next-btn:hover {
+  transform: translateY(-50%) scale(1.1) translateX(5px);
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.75); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.post-stats-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin: 30px auto 15px auto;
+  user-select: none;
+}
+
+/* Контейнеры элементов */
+.modal-like-container,
+.modal-views-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(31, 49, 11, 0.08); /* Легкий органический фон под цвет текста */
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #1f310b;
+}
+
+.modal-like-container {
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.modal-like-container:hover {
+  background-color: rgba(31, 49, 11, 0.15);
+  transform: scale(1.03);
+}
+
+/* Стили кнопки-звезды */
+.modal-like-button {
+  font-size: 1.4em;
+  color: transparent;
+  text-shadow: 0 0 0 #1f310b; /* Темный контур по умолчанию */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.2s ease, text-shadow 0.2s;
+}
+
+/* Состояние, когда лайк пользователя уже стоит */
+.modal-like-button.liked {
+  color: #ffd700; /* Золотая заливка */
+  text-shadow: 0 0 1px #7a6118;
+}
+
+.modal-like-container:hover .modal-like-button {
+  transform: scale(1.15);
+}
+
+/* Иконка глаза */
+.views-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.modal-like-count,
+.modal-views-count {
+  margin-top: 1px;
+}
+
+.post-author-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+  position: relative;
+  z-index: 99;
+}
+
+/* Контейнер-якорь для позиционирования выпадающего окна */
+.author-badge-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(91, 89, 32, 0.08); /* Легкий оттенок под цвет темы */
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Маленькая аватарка в посте */
+.author-mini-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #1f310b;
+}
+
+.author-name-link {
+  font-family: Arial, sans-serif;
+  font-size: 0.95em;
+  font-weight: bold;
+  color: #1f310b;
+}
+
+/* ВСПЛЫВАЮЩАЯ КАРТОЧКА (ПО УМОЛЧАНИЮ СКРЫТА) */
+.author-popover-card {
+  position: absolute;
+  top: 115%; 
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  width: 240px;
+  background-color: #ece0d4; 
+  border: 2px solid #decca5;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none; 
+  transition: opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Небольшая стрелочка внизу бежевой карточки */
+.author-popover-card::after {
+  content: "";
+  position: absolute;
+  bottom: 100%; 
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent #ece0d4 transparent; 
+}
+
+/* ЭФФЕКТ НАВЕДЕНИЯ: Показываем карточку */
+.author-badge-container:hover .author-popover-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0); /* Плавное смещение вверх */
+}
+
+/* Стили элементов внутри всплывающего окна */
+.popover-avatar-wrap {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #8eaf4c; /* Зеленый акцент вокруг аватара */
+  margin-bottom: 10px;
+  background-color: #faf3eb;
+}
+
+.popover-avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.popover-info h4 {
+  margin: 0 0 6px 0;
+  font-family: Arial, sans-serif;
+  font-size: 1.15em;
+  color: #1f310b;
+}
+
+.popover-info .popover-stat-text {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 0.85em;
+  color: #666;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .post-image img {
+  max-width: 100%;  
+}
+
+.post-description {
+  width:100%;
+  max-width:100%;
+  font-size: 1.2em;
+}
+
+.post-content {
+  padding: 20px 5px;
+}
+
+  .post-gallery-grid {
+    gap: 8px; 
+  }
+
+  .gallery-image-wrapper {
+    width: calc(50% - 4px);
+    height: 160px; 
+  }
+
+  .nav-btn {
+    font-size: 40px;
+    padding: 8px 14px;
+    opacity: 0.8;
+  }
+  .prev-btn { left: 10px; }
+  .next-btn { right: 10px; }
+
+}

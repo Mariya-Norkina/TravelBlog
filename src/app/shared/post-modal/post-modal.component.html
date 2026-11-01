@@ -1,0 +1,68 @@
+<div class="modal-overlay" (click)="goBackToBlog()">
+  <div class="modal-window" (click)="$event.stopPropagation()">
+
+    <button type="button" class="close-button" (click)="goBackToBlog()">← Назад </button>
+
+    <!-- Обложка поста -->
+    <div class="post-image" [class.no-image]="!post.photoBase64">
+      <img *ngIf="post.photoBase64" [src]="post.photoBase64" alt="{{ post.title }}">
+    </div>
+
+    <div class="post-content">
+      <h2 class="post-title">{{ post.title }}</h2>
+      <p class="star">-✸-</p>
+      <div class="post-author-wrapper">
+  <div class="author-badge-container">
+    <img [src]="authorAvatarUrl" class="author-mini-avatar" alt="Аватар автора" />
+    <span class="author-name-link">{{ post.author }}</span>
+
+    <!-- ВСПЛЫВАЮЩАЯ БЕЖЕВАЯ ВИЗИТКА КАРТОЧКА -->
+    <div class="author-popover-card">
+      <div class="popover-avatar-wrap">
+        <img [src]="authorAvatarUrl" alt="Увеличенный аватар" />
+      </div>
+      <div class="popover-info">
+        <h4>{{ post.author }}</h4>
+        <p class="popover-stat-text">Публикаций на сайте: <strong>{{ authorTotalPostsCount }}</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+      
+      <p class="post-description">{{ post.description }}</p>
+
+      <!-- ГАЛЕРЕЯ ДОПОЛНИТЕЛЬНЫХ ФОТО -->
+      <div class="post-gallery-section" *ngIf="post.additionalPhotos && post.additionalPhotos.length > 0">
+        <div class="post-gallery-grid">
+          <div *ngFor="let photo of post.additionalPhotos; let i = index" class="gallery-image-wrapper">
+            <img [src]="photo" 
+                 alt="Фото из путешествия" 
+                 class="gallery-img" 
+                 (click)="openFullImage(i)">
+          </div>
+        </div>
+      </div>
+        <div class="post-stats-panel">
+          <div class="modal-views-container">
+            <span class="views-icon">👁</span>
+            <span class="modal-views-count">{{ post.viewsCount || 0 }}</span>
+          </div>
+          <div class="modal-like-container" (click)="onLikeClick()">
+            <button class="modal-like-button" [class.liked]="isLiked">✸</button>
+            <span class="modal-like-count">{{ post.likes ? post.likes.length : (post.likesCount || 0) }}</span>
+          </div>
+        </div>
+      <!-- ВЫЗОВ НОВОГО ВЫНЕСЕННОГО КОМПОНЕНТА КОММЕНТАРИЕВ -->
+      <app-post-comments [post]="post" (closeParentModal)="goBackToBlog()"></app-post-comments>
+    </div>
+
+  </div>
+</div>
+
+<!-- ВНУТРЕННЕЕ ОКНО УВЕЛИЧЕННОГО ПРОСМОТРА КАРТИНКИ -->
+<div class="full-image-overlay" [class.active]="activeFullImageIndex !== null" *ngIf="activeFullImageIndex !== null" (click)="closeFullImage()">
+  <button type="button" class="close-full-image-btn" (click)="closeFullImage()">×</button>
+  <button type="button" class="nav-btn prev-btn" *ngIf="activeFullImageIndex > 0" (click)="prevImage($event)">‹</button>
+  <img [src]="post.additionalPhotos![activeFullImageIndex]" alt="Увеличенное фото" class="full-size-img" (click)="$event.stopPropagation()">
+  <button type="button" class="nav-btn next-btn" *ngIf="activeFullImageIndex < (post.additionalPhotos?.length ?? 0) - 1" (click)="nextImage($event)">›</button>
+</div>

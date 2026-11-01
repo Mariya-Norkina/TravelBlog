@@ -1,0 +1,57 @@
+<div class="blog-wrapper">
+  
+  <!-- 1. Название в самом верху страницы -->
+  <h2 class="blog-main-title">Блог</h2>
+
+  <!-- 2. Строка поиска ниже названия, смещенная вправо -->
+  <div class="search-bar-row">
+    <div class="controls-wrapper">
+<div class="date-container" title="Выбрать дату">
+  <span class="date-emoji">📅</span>
+  <input 
+    id="blog-date-input"
+    type="date" 
+    [(ngModel)]="selectedDate" 
+    (change)="onDateChange()" />
+  <button *ngIf="selectedDate" class="clear-date-btn" (click)="clearDate()" title="Сбросить дату">✕</button>
+</div>
+
+    <div class="search-container">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="onSearchInputChange()" 
+        placeholder="Поиск по названию или автору..." 
+        (keydown.enter)="onSearch()" />
+      <button class="search-btn" (click)="onSearch()" title="Найти">🔍</button>
+    </div>
+    </div>
+  </div>
+
+  <!-- 3. Сами посты располагаются ниже строки поиска -->
+  <div class="posts-container" *ngIf="filteredPosts.length > 0">
+    <!-- === ИСПРАВЛЕНИЕ: Мы полностью убрали обертку и кнопки удаления/редактирования === -->
+    <app-post-card 
+      *ngFor="let post of paginatedPosts"
+      [post]="post"
+      [isLiked]="hasUserLiked(post)"
+      [isLoggedIn]="authService.isLoggedIn()"
+      [currentUsername]="authService.currentUser?.username"
+      [showAdminActions]="false" style="cursor: pointer;"
+      (click)="openPost(post)">
+    </app-post-card>
+  </div>
+
+  <!-- Если ничего не найдено -->
+  <div class="no-posts-message" *ngIf="filteredPosts.length === 0">
+    <p>Посты не найдены. Попробуйте изменить запрос.</p>
+  </div>
+
+  <!-- Интерфейс пагинации в самом низу страницы -->
+  <div class="pagination-panel" *ngIf="totalPages > 1">
+    <button class="page-arrow" [disabled]="currentPage === 1" (click)="goToPrevPage()">🡨</button>
+    <span class="page-info">Страница <strong>{{ currentPage }}</strong> из <strong>{{ totalPages }}</strong></span>
+    <button class="page-arrow" [disabled]="currentPage === totalPages" (click)="goToNextPage()">🡪</button>
+  </div>
+
+</div>

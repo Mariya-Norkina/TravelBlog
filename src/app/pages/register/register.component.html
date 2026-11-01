@@ -1,0 +1,63 @@
+<body>
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="form">
+    <img src="../../../assets/img/cloud.png" class="corner top-left" alt="Левый верхний угол">
+    <img src="../../../assets/img/back12.png" class="corner bottom-right" alt="Нижний правый угол">
+      <h2>{{ isLoginMode ? 'Авторизация' : 'Регистрация' }}</h2>
+
+    <label>
+      <input formControlName="username" type="text" [placeholder]="isLoginMode ? 'Введите имя пользователя или ID' : 'Придумайте имя пользователя'" />
+    </label>
+    <div *ngIf="authForm.get('username')?.touched">
+      <small *ngIf="isLoginMode && authForm.get('username')?.hasError('required')">
+        Пожалуйста, введите логин или ID
+      </small>
+      
+      <ng-container *ngIf="!isLoginMode">
+        <small *ngIf="authForm.get('username')?.hasError('required')">
+          Имя пользователя обязательно для заполнения
+        </small>
+        <small *ngIf="authForm.get('username')?.value && !isUsernameHasLetters">
+          Имя не должно состоять только из цифр, добавьте буквы
+        </small>
+      </ng-container>
+    </div>
+
+    <label>
+      <input type="password" formControlName="password" placeholder="Пароль" (focus)="onPasswordFocus()" (blur)="onPasswordBlur()"/>
+    </label>
+      <div *ngIf="isLoginMode && isPasswordFocused" class="forgot-password-box">
+        <span class="auth-toggle-btn" (click)="resetPassword()">
+        Забыли пароль?
+        </span>
+      </div>
+    <div *ngIf="authForm.get('password')?.touched">
+      <small *ngIf="isLoginMode && authForm.get('password')?.hasError('required')">
+        Пожалуйста, введите пароль
+      </small>
+
+      <ng-container *ngIf="!isLoginMode">
+        <small *ngIf="authForm.get('password')?.hasError('required')">
+          Пароль обязателен для заполнения
+        </small>
+        
+        <ng-container *ngIf="authForm.get('password')?.value">
+          <small *ngIf="isPasswordTooShort">
+            • Пароль слишком короткий (минимум 8 знаков)<br>
+          </small>
+          <small *ngIf="!isPasswordHasLetters">
+            • Добавьте хотя бы одну букву<br>
+          </small>
+          <small *ngIf="!isPasswordHasSymbols">
+            • Добавьте минимум 1 спецсимвол (например: !, @, #, $, %)<br>
+          </small>
+        </ng-container>
+      </ng-container>
+    </div>
+      <p *ngIf="message" class="message-info">{{ message }}</p>
+    <button type="submit">{{ isLoginMode ? 'Войти' : 'Зарегистрироваться' }}</button>
+
+      <span (click)="toggleMode()" class="auth-toggle-btn">
+        {{ isLoginMode ? 'Еще нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти' }}
+      </span>
+  </form>
+</body>

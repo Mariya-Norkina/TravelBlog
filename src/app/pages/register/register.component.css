@@ -1,0 +1,201 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  overflow-y: hidden;
+  scrollbar-width: none; 
+}
+
+@font-face {
+  font-family: 'MyCustomFont'; 
+  src: url('assets/fonts/ofont.ru_KistyAC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.form {
+  background-color: #5b5920; 
+  padding: 20px;
+  border-radius: 25px;
+  max-width: 40%; 
+  width: 80%;
+  font-family: 'MyCustomFont', Arial, sans-serif; 
+  font-size: 1.2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  padding-bottom: 3%;
+}
+
+h2 {
+  margin-bottom: 10px;
+  text-align: center;
+  font-family: 'MyCustomFont';
+  font-size: 2.5em;
+  color: #ffd756;
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  max-width: 350px;
+  padding: 12px 15px;
+  margin-top: 0px;
+  margin-bottom: 2px;
+  border: 2px solid #decca5;
+  border-radius: 4px;
+  font-size: 1em;
+  background-color: #faf3eb;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #8eaf4c;
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 50%;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: #ECE0D4;
+  color: #58710e;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.15em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 2%;
+}
+
+button[type="submit"]:hover {
+  background-color: #c3b517;
+  color: #fff;
+}
+
+p {
+  margin-top: 20px;
+  text-align: center;
+  color: #6b8f0f;
+  font-size: 1.2em;
+  transition: opacity 0.3s;
+}
+
+p.ng-animating {
+  opacity: 0;
+}
+
+small {
+  font-family: Arial;
+  color: #8fa065;
+}
+
+.corner {
+  position: absolute;
+  width: 100px; 
+  height: auto;
+  z-index: 1; 
+}
+
+.top-left {
+  top: 20%;
+  left: 53%;
+  width: 24vw;
+  transform: scaleX(-1);
+}
+
+.bottom-right {
+  bottom: 17%;
+  right: 48.7%;
+  width: 27vw;
+  transform: rotate(0deg);
+  transform: scaleX(-1);
+}
+
+.auth-toggle-btn {
+  margin-top: 2%;
+  cursor: pointer;
+  color: #d7cb90; 
+  text-align: center;
+  text-decoration: underline;
+  transition: transform 0.3s ease;
+} 
+
+.auth-toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+.message-info {
+  font-family: Arial, sans-serif;
+  font-size: 0.75em;
+  color: #eae6c8;
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;            /* Разрешаем скролл, если форма не влезает по высоте */
+    min-height: 100vh;
+    padding: 20px 10px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .form {
+    width: 100% !important;      /* Игнорируем десктопные 80% и растягиваем во всю ширину */
+    max-width: 92% !important;   /* Оставляем аккуратные небольшие отступы по бокам экрана */
+    padding: 40px 20px !important; /* Внутренние отступы, чтобы контент не прилипал */
+    position: relative;          /* Обязательно: становится точкой отсчета для картинок-углов */
+  }
+
+  h2 {
+    font-size: 2.2em;
+    margin-top: 10px;
+  }
+
+  /* Уменьшаем размер текста подсказок, чтобы они не растягивали форму */
+  small {
+    font-size: 0.75em !important; 
+    color: #eae6c8 !important;   /* Светлый пастельный цвет для идеальной читаемости */
+    line-height: 1.3;
+    display: block;
+    text-align: left;
+    width: 100%;
+  }
+
+  /* Кнопка отправки формы */
+  button[type="submit"] {
+    width: 100%;      
+    font-size: 1.1em;
+    padding: 14px 20px;
+    white-space: nowrap;  
+  }
+
+  .corner {
+    position: absolute;
+    z-index: 10;           
+    pointer-events: none; 
+  }
+
+  .top-left {
+    top: -50px;  
+    left: 170px;
+    width: 200px ;  
+    transform: scaleX(-1);
+  }
+
+  .bottom-right {
+    bottom: -30px ; 
+    right: 140px;
+    left: auto; 
+    width: 200px;      
+    transform: scaleX(-1) ; 
+  }
+}

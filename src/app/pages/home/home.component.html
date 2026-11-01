@@ -1,0 +1,41 @@
+<div class="section section-1">
+  <div class="welcome-message">Добро пожаловать!</div>
+    <p class="welcome-text">Открывай мир — шаг за шагом</p>
+      <p class="star">-✸-</p>
+</div>
+
+<div class="section section-2">
+  <div class="image-group">
+      <img src="assets/img/ball.jpeg">
+      <img src="assets/img/pep.png" alt="Pep image">
+      <img src="assets/img/wat.png">
+  </div>
+  <div class="text-star-container">
+    <div class="welcome-message" id="cretext">Вдохновляйте и вдохновляйтесь!</div>
+    <p class="text">
+      Добро пожаловать в наш блог, где каждый шаг — это приключение, а каждая тропа ведёт к новым горизонтам. Как блогер и путешественник, вы обладаете уникальной способностью вдохновлять других своими историями о путешествиях и открытиях.
+    </p>
+    <p class="star">-✸-</p>
+  </div>
+</div>
+
+<section class="section-3">
+  <div *ngIf="authService.isLoggedIn()" class="create-post-wrapper">
+    <app-create-post (postCreated)="onPostCreated()"></app-create-post>
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+  </div>
+
+  <div *ngIf="authService.isLoggedIn()" class="promo-hint-side">
+    <img src="assets/img/arrow.png" class="arrow" alt="Стрелочка" />
+    <p class="text12">Расскажите всем о своём приключении здесь!</p>
+  </div>
+
+<div *ngIf="!authService.isLoggedIn()" class="promo-section-wrapper">
+  <div class="promo-register-box">
+    <h2>Зарегистрируйтесь для начала работы</h2>
+    <button routerLink="/register" id="but2">Зарегистрироваться</button>
+  </div>
+</div>
+</section>

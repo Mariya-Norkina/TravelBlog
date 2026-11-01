@@ -1,0 +1,40 @@
+<div class="form-container">
+  <h1 id="h1">Добавить новый пост о путешествиях</h1>
+  <form (ngSubmit)="submitPost()" class="form-fields">
+    <input type="text" [(ngModel)]="postTitle" name="title" (input)="onTitleInput($event)" placeholder="Заголовок" required class="form-input" />
+    <textarea [(ngModel)]="postDescription" name="description" placeholder="Описание" required class="form-textarea"></textarea>
+    <input type="date" [(ngModel)]="postDate" name="date" required class="form-input" />
+    
+    <!-- БЛОК 1: ФОТО ОБЛОЖКИ -->
+    <div class="photo-upload-group">
+      <input type="file" #postPhotoInput (change)="onFileChange($event)" hidden accept="image/*" />
+      <button type="button" class="upload-button" (click)="postPhotoInput.click()" *ngIf="!createPhotoPreviewUrl">
+        Добавить фото обложки
+      </button>
+      
+      <!-- Превью обложки с крестиком -->
+      <div *ngIf="createPhotoPreviewUrl" class="image-preview-wrapper main-cover-preview">
+        <img [src]="createPhotoPreviewUrl" class="preview-img">
+        <button type="button" class="remove-photo-btn" (click)="removeCoverPhoto()">×</button>
+      </div>
+    </div>
+
+    <!-- БЛОК 2: ДОПОЛНИТЕЛЬНЫЕ ФОТО (ГАЛЕРЕЯ) -->
+    <div class="photo-upload-group gallery-upload-group">
+      <input type="file" #galleryPhotoInput (change)="onGalleryFileChange($event)" hidden accept="image/*" multiple />
+      <button type="button" class="upload-button gallery-btn" (click)="galleryPhotoInput.click()" [disabled]="galleryPhotos.length >= 10">
+        Добавить фото в галерею ({{ galleryPhotos.length }}/10)
+      </button>
+
+      <!-- Сетка превью дополнительных фотографий -->
+      <div class="gallery-previews-grid" *ngIf="galleryPhotos.length > 0">
+        <div *ngFor="let photo of galleryPhotos; let i = index" class="image-preview-wrapper gallery-item-preview">
+          <img [src]="photo" class="preview-img">
+          <button type="button" class="remove-photo-btn small-remove-btn" (click)="removeGalleryPhoto(i)">×</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-post-btn">Опубликовать</button>
+  </form>
+</div>

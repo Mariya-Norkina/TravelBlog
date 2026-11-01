@@ -1,0 +1,432 @@
+.section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+} 
+
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('assets/fonts/ofont.ru_KistyAC.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.section-1 {
+  background-image: url('/assets/img/back12.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.welcome-message {
+  font-family: 'MyCustomFont', Arial, sans-serif;
+  font-size: 7em; 
+  color: rgb(255, 215, 86); 
+  text-align: center;
+  max-width: 40%;
+  display: flex;
+  align-items: center;
+}
+
+.welcome-text {
+  font-family: Arial, sans-serif;
+  font-size: 1.3em; 
+  color: rgb(255, 255, 255); 
+  text-align: center;
+  max-width: 40%;
+  display: flex;
+  align-items: center;
+}
+
+.section-2 {
+  background-image: url('/assets/img/back22.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+#cretext {
+  font-size: 2.6em;
+  text-align: center;
+  margin-left: -8%;
+}
+
+.text {
+  font-family: Arial, sans-serif;
+  font-size: 1.3em; 
+  color: #ffffff; 
+  text-align: justify;
+  display: flex;
+}
+
+.star {
+  color: rgb(255, 215, 86);
+  font-size: 2.3em; 
+}
+
+.text-star-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 33%;
+  margin-right: 0%;
+  margin-left: 11%;
+  margin-top: 10%;
+}
+
+.image-group {
+  width: 35%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10%;
+  margin-top: -47%;
+}
+
+.image-group img {
+  border-radius: 10px;
+  width: 45%;
+  height: auto;
+}
+
+.image-group img:nth-child(1) {
+  position: absolute;
+  margin-top: 0px;
+  margin-left: -5%;
+}
+
+.image-group img:nth-child(2) {
+  position: absolute;
+  margin-top: 36%;
+  margin-left: 52%;
+}
+
+.image-group img:nth-child(3) {
+  position: absolute;
+  margin-top: 78%;
+  margin-left: 3%;
+}
+
+h1 {
+  text-align: center; 
+  font-family: 'MyCustomFont';
+  font-weight: 400;
+  color: #5b7e30;
+}
+
+.section-3 {
+  background-image: url('assets/img/back33.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: row !important;   /* Жестко ставим форму и подсказку в один горизонтальный ряд */
+  justify-content: center !important; /* Центрируем весь контент по горизонтали экрана */
+  align-items: center !important;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+}
+
+.create-post-wrapper {
+  margin-left: 0 !important;        /* Убираем старый маргин, мешавший центрированию */
+  margin-top: 5% !important;
+  width: 50% !important;            /* Отдаем форме половину ширины экрана */
+  max-width: 500px !important;
+  display: flex;
+  justify-content: center;
+}
+
+.success-message {
+  color: #6b8f0f;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+.success-message.ng-animating {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
+.promo-section-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 5%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Левая сторона, содержащая текст и стрелочку */
+.promo-hint-side {
+  position: relative;
+  width: 50% !important;            /* Отдаем вторую половину ширины экрана */
+  display: flex !important;
+  flex-direction: row !important;   /* Внутри блока: стрелочка СЛЕВА, текст СПРАВА */
+  align-items: center !important;   /* Выравнивает стрелку и текст по одной оси высоты */
+  justify-content: center !important; /* Центрирует стрелку и текст в их половинке экрана, сдвигая правее */
+}
+
+/* Текст подсказки: цвет изменен на белый, чтобы он не сливался с фоном */
+.text12 {
+  font-family: Arial, sans-serif !important;
+  font-size: 1.6em !important; 
+  color: #6b8f0f;/* Возвращаем контрастный белый цвет вместо зеленого */
+  text-align: center !important;      /* Выравниваем текст по левому краю, к стрелочке */
+  line-height: 1.4 !important;
+  max-width: 500px !important; 
+  margin-left: 5%;  
+}
+
+/* Стрелочка позиционируется абсолютно и указывает на форму регистрации справа */
+.arrow {
+  position: static !important;      /* Отменяем абсолютные координаты, привязываем к тексту */
+  width: 120px !important;
+  height: auto !important;
+  z-index: 3;
+  /* Разворачиваем её, чтобы она указывала из центра налево (на форму) */
+  transform: rotate(140deg) !important; 
+  margin-left: 14%;
+}
+
+/* Правая сторона: Заголовок и кнопка */
+.promo-register-box {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  width: 45%;
+  text-align: center;
+}
+
+.promo-register-box h2 {
+  font-family: 'MyCustomFont', Arial, sans-serif;
+  font-size: 2.4em;
+  color: #ffd756; /* Золотистый цвет заголовка */
+  /* margin-bottom: 20px; */
+}
+
+#but2 {
+  padding: 15px 35px;
+  background-color: #8fa065;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+#but2:hover {
+  background-color: #c3b517;
+  transform: translateY(-2px); /* Легкий интерактивный подъем при наведении */
+}
+
+
+/*МОБИЛЬНЫЕ УСТРОЙСТВА*/
+@media (max-width: 1280px) {
+  .arrow {
+  left: 4%; 
+}
+
+.create-post-wrapper {
+  margin-top: 16%;
+}
+
+}
+@media (max-width: 768px) {
+  /* 1. Общие настройки для всех секций */
+  .section {
+    height: auto; /* Убираем жесткие 100vh, чтобы контент не вылезал из экранов */
+    min-height: 100vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    flex-direction: column; /* Перестраиваем всё в одну вертикальную колонку */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .section-2 {
+  background-image: url('/assets/img/back233.png');
+   flex-direction: column;
+  }
+
+  /* 2. СЕКЦИЯ 1: Приветствие */
+  .welcome-message {
+    font-size: 3.5em; /* Уменьшаем гигантский шрифт 7em */
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .welcome-text {
+    font-size: 1.1em;
+    max-width: 100%;
+  }
+
+  /* 3. СЕКЦИЯ 2: Текст со звездами и блок картинок */
+  .section-2 {
+    flex-direction: column;
+  }
+
+   #cretext {
+    margin-left: 0; /* Сбрасываем десктопный сдвиг */
+    font-size: 2em;
+  }
+
+  .text-star-container {
+    max-width: 100%;
+    margin: 20px 0 ; /* Центрируем */
+    text-align: center;
+    
+  }
+
+  .text {
+    text-align: justify !important; 
+    font-size: 1.1em !important;     /* Уменьшили размер шрифта текста */
+    padding: 0 3%!important;       /* Увеличили боковые отступы внутри параграфа */
+  }
+
+  /* Блок картинок */
+  .image-group {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 20px !important; 
+    display: flex !important;
+    flex-direction: row !important; 
+    justify-content: center;
+    align-items: center;              /* Центрирование по вертикали для шахматного порядка */
+    gap: 15px;                        /* Немного увеличили расстояние между картинками */
+  }
+
+  .image-group img {
+    width: 30% !important; 
+    height: 180px !important;         /* Увеличили высоту картинок со 120px до 180px */
+    object-fit: cover; 
+    border-radius: 8px;               /* Опционально: легкое скругление для аккуратности */
+  }
+
+  /* Сбрасываем десктопные абсолютные сдвиги */
+  .image-group img:nth-child(1),
+  .image-group img:nth-child(2),
+  .image-group img:nth-child(3) {
+    position: relative !important;
+    margin: 0 !important;
+  }
+
+  /* Шахматный порядок (Эффект лесенки/волны) */
+  .image-group img:nth-child(1) {
+    transform: translateY(-15px);     /* Первую картинку приподнимаем вверх */
+  }
+
+  .image-group img:nth-child(2) {
+    transform: translateY(15px);      /* Вторую (среднюю) картинку опускаем вниз */
+  }
+
+  .image-group img:nth-child(3) {
+    transform: translateY(-15px);     /* Третью картинку приподнимаем вверх */
+  }
+
+  .section-3 {
+    height: auto !important;           
+    min-height: 100dvh;
+    display: flex !important;
+    flex-direction: column !important; /* Строим элементы вертикально */
+    justify-content: flex-start !important; 
+    padding: 130px 20px 40px 20px !important;    
+    box-sizing: border-box;
+    gap: 20px !important;              /* Комфортный зазор между подсказкой и формой */
+    background-image: url('/assets/img/back333.png');
+  }
+
+  /* Блок подсказки (текст + стрелочка) СВЕРХУ */
+  .promo-hint-side {
+    display: flex !important;          
+    flex-direction: column !important; /* Выстраивает элементы вертикально в стопку */
+    justify-content: center !important;
+    align-items: center !important;    
+    width: 100% !important;            
+    margin-left: 0 !important;         
+    text-align: center;
+    order: 1 !important;               /* Сама подсказка находится выше формы */
+    gap: 10px !important;              /* Удобный зазор между текстом и стрелочкой */
+  }
+
+  /* Текст подсказки на мобильном (СНАЧАЛА) */
+  .text12 {
+    font-size: 1.3em !important;       
+    text-align: center !important;     
+    max-width: 100% !important;
+    margin: 0 !important;     
+    color: #ffffff !important;
+    order: 1 !important;               /* Жестко ставит текст первым по порядку */
+  }
+
+  /* Стрелочка, смотрящая ВНИЗ (ПОТОМ) */
+  .arrow {
+    position: static !important;       
+    width: 40px !important;            
+    height: auto !important;
+    margin: 0 !important;              
+    order: 2 !important;               /* Жестко ставит стрелочку под текстом */
+    
+    /* Поворот стрелки вертикально вниз на форму */
+    transform: rotate(90deg) !important; 
+  }
+
+  /* Форма СНИЗУ */
+  .create-post-wrapper {
+    width: 85% !important;             /* ИЗМЕНЕНО: ширина теперь ровно 80% от экрана */
+    max-width: 85% !important;         /* ИЗМЕНЕНО: жестко ограничили максимальную ширину */        
+    margin: 0 auto !important; 
+    height: 80% !important;            /* ИЗМЕНЕНО: высота формы теперь ровно 70% */
+    order: 2 !important;                /* Помещает форму на второе место (ниже подсказки) */
+  }
+
+  /* Промо-блок (Текст подсказки и кнопка регистрации для гостей) */
+  .promo-section-wrapper {
+    flex-direction: column !important; 
+    justify-content: center !important; 
+    align-items: center !important;
+    width: 100%;
+    margin-top: 0 !important;           
+    order: 3 !important;
+  }
+
+  .promo-register-box {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;     
+    text-align: center;
+  }
+
+  .promo-register-box h2 {
+    font-size: 1.8em !important;
+    margin-bottom: 20px;
+  }
+
+  #but2 {
+    width: 100%; 
+    max-width: 300px;
+    padding: 12px 20px;
+    display: block;
+  }
+}
