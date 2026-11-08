@@ -81,7 +81,7 @@ describe('PostModalComponent', () => {
       ]
     })
       .overrideComponent(PostModalComponent, {
-        set: { template: '' }
+        // set: { template: '' }
       })
       .compileComponents();
 
