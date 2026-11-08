@@ -9,7 +9,7 @@ export interface AuthUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = '/api/auth'; 
+  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/auth';
 
   private userSubject = new BehaviorSubject<AuthUser | null>(null);
   user$ = this.userSubject.asObservable();
@@ -47,7 +47,7 @@ loginServer(credentials: {
 }): Observable<any> {
 
   return this.http.post<any>(
-    '/api/auth/login',
+    `${this.apiUrl}/login`,
     credentials
   ).pipe(
 
@@ -84,12 +84,12 @@ loginServer(credentials: {
 
   changePassword(passwords: { OldPassword: string, NewPassword: string }): Observable<any> {
     // Шлем запрос на AuthController бэкенда
-    return this.http.post('/api/auth/change-password', passwords);
+    return this.http.post(`${this.apiUrl}/change-password`, passwords);
   }
 
   deleteAccount(): Observable<any> {
     // Шлем запрос на AuthController бэкенда
-    return this.http.delete('/api/auth/delete-account').pipe(
+    return this.http.delete(`${this.apiUrl}/delete-account`).pipe(
       tap(() => this.logout())
     );
   }

@@ -10,7 +10,7 @@ export interface TravelPost {
   author: string;
   photoBase64?: string;
   likes?: string[]; // Массив ID пользователей, лайкнувших пост
-  additionalPhotos?: string[]; 
+  additionalPhotos?: string[];
   comments?: PostComment[];
   likesCount: number;
   likedByUsers?: string[];
@@ -31,7 +31,7 @@ export interface PostComment {
   providedIn: 'root'
 })
 export class PostService {
-  private apiUrl = '/api/posts';
+  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/posts';
 
   constructor(private http: HttpClient) {}
 
@@ -106,7 +106,7 @@ export class PostService {
         `${this.apiUrl}/${postId}/comments/${commentId}/react`,
         { emoji }
       );
-    } 
+    }
 
       updateComment(
         postId: string,

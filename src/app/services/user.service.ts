@@ -12,7 +12,7 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = '/api/users';
+  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 
@@ -25,11 +25,11 @@ export class UserService {
   }
 
   updateUserPassword(username: string, password: string): Observable<any> {
-    return this.http.patch('/api/users/reset-password', { username, password });
+    return this.http.patch(`${this.apiUrl}/reset-password`, { username, password });
   }
 
   updatePasswordById(id: string, password: string): Observable<any> {
-  return this.http.patch(`/api/users/${id}`, { password });
+  return this.http.patch(`${this.apiUrl}/${id}`, { password });
 }
 
   deleteUser(id: string): Observable<any> {
