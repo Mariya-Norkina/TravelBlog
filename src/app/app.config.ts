@@ -1,15 +1,26 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection
+} from '@angular/core';
 
-import { routes } from './app.routes';
-// import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideHttpClient } from '@angular/common/http';
+import { importProvidersFrom } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { AppRoutingModule } from './app-routing.module';
+import { jwtInterceptor } from './interceptors/jwt.interceptor';
+import { provideTaiga } from '@taiga-ui/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-   provideHttpClient()
+
+    importProvidersFrom(AppRoutingModule),
+
+    provideHttpClient(
+      withInterceptors([jwtInterceptor])
+    ),
+
+    provideTaiga()
   ]
 };

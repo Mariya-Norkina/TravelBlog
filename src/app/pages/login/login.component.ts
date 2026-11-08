@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +9,8 @@ import { TruncateWordsPipe } from '../../pipes/truncate-words.pipe';
 import { CreatePostComponent } from '../../shared/create-post/create-post.component';
 import { PostCardComponent } from '../../shared/post-card/post-card.component';
 import { PostModalComponent } from '../../shared/post-modal/post-modal.component';
+import { TuiAnimated } from '@taiga-ui/cdk';
+import { TuiNotificationService } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-login',
@@ -20,27 +22,27 @@ import { PostModalComponent } from '../../shared/post-modal/post-modal.component
     TruncateWordsPipe, 
     CreatePostComponent, 
     PostCardComponent, 
-    PostModalComponent
+    PostModalComponent,
+    TuiAnimated
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  showSuccessMessage = false;
-  successMessage = 'Регистрация прошла успешно!';
+  private readonly notifications = inject(TuiNotificationService);
   
   userPostsPage: number = 1;
   likedPostsPage: number = 1;
   readonly cabinetPageSize: number = 3;
 
-  // Управление вкладками бокового меню
   currentTab: 'profile' | 'create' | 'liked' = 'profile';
+
+  private justRegistered = false;
 
   userPosts: TravelPost[] = [];
   likedPosts: TravelPost[] = [];
   selectedPost: TravelPost | null = null;
 
-  // Управление редактированием
   editingPost: TravelPost | null = null;
   editForm!: FormGroup;
   editPhotoPreviewUrl: string | null = null;
@@ -50,6 +52,9 @@ export class LoginComponent implements OnInit {
   @ViewChild('editPhotoInput') editPhotoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('editGalleryInput') editGalleryInput!: ElementRef<HTMLInputElement>;
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
+
+  seenUserPostIds = new Set<string>();
+  seenLikedPostIds = new Set<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -62,17 +67,23 @@ export class LoginComponent implements OnInit {
     const state = navigation?.extras.state as { justRegistered: boolean };
     
     if (state && state.justRegistered) {
-      this.showSuccessMessage = true;
+      this.showToast('Регистрация прошла успешно! Добро пожаловать!');
     }
   }
 
-ngOnInit(): void {
-  if (this.showSuccessMessage) {
-    setTimeout(() => {
-      this.showSuccessMessage = false;
-    }, 3000);
+  private showToast(message: string): void {
+    this.notifications.open(message, {
+      label: '',
+      autoClose: 3500
+    }).subscribe();
   }
 
+ngOnInit(): void {
+    if (this.justRegistered) {
+      this.showToast('Регистрация прошла успешно! Добро пожаловать!');
+    }
+
+  
   if (this.authService.isLoggedIn()) {
     this.loadUserPosts();
     this.loadLikedPosts();
@@ -86,7 +97,6 @@ ngOnInit(): void {
   }
 }
 
-  // Переключение вкладок меню с автоматическим сбросом временного контента
 setTab(tab: 'profile' | 'create' | 'liked'): void {
   this.currentTab = tab;
   this.userPostsPage = 1;
@@ -94,7 +104,6 @@ setTab(tab: 'profile' | 'create' | 'liked'): void {
   this.closeEditModal();
 }
 
-// Геттеры для пагинированных постов (замените вывод в шаблоне на них)
 get paginatedUserPosts(): TravelPost[] {
   const startIndex = (this.userPostsPage - 1) * this.cabinetPageSize;
   return this.userPosts.slice(startIndex, startIndex + this.cabinetPageSize);
@@ -113,45 +122,51 @@ get totalLikedPostsPages(): number {
   return Math.ceil(this.likedPosts.length / this.cabinetPageSize) || 1;
 }
 
-// Методы навигации для созданных постов
-goToPrevUserPage(): void {
-  if (this.userPostsPage > 1) this.userPostsPage--;
-}
+  goToPrevUserPage(): void {
+    if (this.userPostsPage > 1) {
+      this.paginatedUserPosts.forEach(p => p.id && this.seenUserPostIds.add(p.id));
+      this.userPostsPage--;
+    }
+  }
 
-goToNextUserPage(): void {
-  if (this.userPostsPage < this.totalUserPostsPages) this.userPostsPage++;
-}
+  goToNextUserPage(): void {
+    if (this.userPostsPage < this.totalUserPostsPages) {
+      this.paginatedUserPosts.forEach(p => p.id && this.seenUserPostIds.add(p.id));
+      this.userPostsPage++;
+    }
+  }
 
-// Методы навигации для понравившихся постов
-goToPrevLikedPage(): void {
-  if (this.likedPostsPage > 1) this.likedPostsPage--;
-}
+  goToPrevLikedPage(): void {
+    if (this.likedPostsPage > 1) {
+      this.paginatedLikedPosts.forEach(p => p.id && this.seenLikedPostIds.add(p.id));
+      this.likedPostsPage--;
+    }
+  }
 
-goToNextLikedPage(): void {
-  if (this.likedPostsPage < this.totalLikedPostsPages) this.likedPostsPage++;
-}
+  goToNextLikedPage(): void {
+    if (this.likedPostsPage < this.totalLikedPostsPages) {
+      this.paginatedLikedPosts.forEach(p => p.id && this.seenLikedPostIds.add(p.id));
+      this.likedPostsPage++;
+    }
+  }
 
-  // Обработчик события успешного создания поста из дочерней формы
   onPostCreated(): void {
-    this.successMessage = 'Пост успешно добавлен!';
-    this.showSuccessMessage = true;
+    this.showToast('Пост успешно добавлен!');
     
     this.loadUserPosts();
     
     setTimeout(() => {
-      this.showSuccessMessage = false;
-      this.currentTab = 'liked'; // Автоматический редирект на список постов
+      this.currentTab = 'liked';
     }, 2000);
   }
 
-  // Обработка загрузки фото для РЕДАКТИРОВАНИЯ существующего поста
   onEditFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
     if (file.size > 2 * 1024 * 1024) {
-      alert('Файл слишком большой (макс. 2MB)');
+      this.showToast('Файл слишком большой (макс. 2MB)');
       input.value = '';
       return;
     }
@@ -175,7 +190,7 @@ goToNextLikedPage(): void {
       } else {
         alert(`Вы можете добавить еще не более ${allowedCount} фото. Вы попытались загрузить ${files.length}.`);
       }
-      input.value = ''; // Сбрасываем выбор в инпуте
+      input.value = '';
       return;
     }
     
@@ -194,10 +209,9 @@ goToNextLikedPage(): void {
       reader.readAsDataURL(file);
     });
 
-    input.value = ''; // Сбрасываем инпут для возможности повторного выбора
+    input.value = '';
   }
 
-  // === НОВЫЙ МЕТОД: Удаление конкретной картинки из редактируемой галереи ===
   removeEditGalleryImage(index: number): void {
     this.editAdditionalPhotosUrls.splice(index, 1);
   }
@@ -220,16 +234,12 @@ goToNextLikedPage(): void {
       const currentUser = this.authService.currentUser;
 
       if (currentUser) {
-        // 1. Обновляем локальные данные в сервисе авторизации (чтобы аватарка сменилась везде)
         this.authService.login(currentUser.id, currentUser.username);
-        // Расширяем сохраненный объект в localStorage
         const userWithAvatar = { ...currentUser, avatarBase64: base64Image };
         localStorage.setItem('user', JSON.stringify(userWithAvatar));
-        (this.authService as any).userSubject?.next(userWithAvatar); // принудительно пушим в Subject, если он доступен
+        (this.authService as any).userSubject?.next(userWithAvatar);
 
-        // 2. Отправляем запрос на бэкенд для обновления профиля пользователя в БД
         if (typeof this.userService['updateUserPassword'] === 'function') {
-          // Используем PATCH/PUT через http-сервис, если бэкенд поддерживает частичное обновление полей
           this.userService.addUser({ ...currentUser, avatarBase64: base64Image } as any).subscribe({
             error: (err) => console.error('Не удалось сохранить аватарку на сервере:', err)
           });
@@ -265,7 +275,6 @@ goToNextLikedPage(): void {
   }
 
   triggerAvatarUpload(event: Event): void {
-  // Останавливаем всплытие события, чтобы клик не уходил на другие элементы
   event.stopPropagation(); 
   
   if (this.avatarInput && this.avatarInput.nativeElement) {
@@ -276,43 +285,38 @@ goToNextLikedPage(): void {
   }
 
   changePassword(): void {
-  const currentUserId = this.authService.currentUser?.id;
-  if (!currentUserId) return;
-
-  const newPassword = prompt('Введите новый пароль для вашего аккаунта:');
-  if (!newPassword || newPassword.trim().length === 0) {
-    alert('Пароль не может быть пустым!');
-    return;
-  }
-
-  this.userService.updateUserPassword(currentUserId, newPassword).subscribe({
-    next: () => {
-      alert('Пароль успешно изменен!');
-    },
-    error: (err) => {
-      console.error(err);
-      alert('Не удалось изменить пароль.');
-    }
-    });
-  }
-
-  deleteProfile(): void {
-    const currentUserId = this.authService.currentUser?.id;
-
-    if (!currentUserId) {
-      alert('Ошибка: Идентификатор пользователя не найден.');
+    const NewPassword = prompt('Введите новый пароль для вашего аккаунта:');
+    if (!NewPassword || NewPassword.trim().length === 0) {
+      alert('Пароль не может быть пустым!');
       return;
     }
 
-    if (confirm('Вы уверены, что хотите навсегда удалить свой профиль и все данные аккаунта?')) {
-      this.userService.deleteUser(currentUserId).subscribe({
+    const OldPassword = prompt('Введите ваш текущий пароль для подтверждения:');
+    if (!OldPassword) return;
+
+    // Вызываем оригинальный метод authService, передавая оба пароля
+    this.authService.changePassword({ OldPassword, NewPassword }).subscribe({
+      next: () => {
+        this.showToast('Пароль успешно изменен!');
+      },
+      error: (err) => {
+        this.showToast('Не удалось изменить пароль');
+      }
+    });
+  }
+
+
+
+  deleteProfile(): void {
+    if (confirm('Вы уверены, что хотите навсегда удалить свой профиль?')) {
+      // Вызываем .NET метод удаления в AuthController
+      this.authService.deleteAccount().subscribe({
         next: () => {
-          alert('Ваш профиль был успешно удален.');
-          this.logout(); // Очищает localStorage и делает редирект на /register
+          this.showToast('Ваш профиль был успешно удален.');
+          this.logout(); 
         },
         error: (err) => {
-          console.error('Ошибка при удалении профиля:', err);
-          alert('Не удалось удалить профиль. Возможно, сервер недоступен.');
+          alert(err.error?.message || 'Не удалось удалить профиль.');
         }
       });
     }
@@ -328,23 +332,26 @@ goToNextLikedPage(): void {
   }
 
   private loadUserPosts(): void {
+    const currentUserId = this.authService.currentUser?.id;
+    if (!currentUserId) return;
+
     this.postService.getPosts().subscribe(posts => {
+      // Сверяем ID пользователя с массивом постов из .NET бэкенда
       this.userPosts = posts.filter(
         post => post.author === this.authService.currentUser?.username
       );
     });
   }
 
+
   private loadLikedPosts(): void {
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser) return;
+    const currentUserId = this.authService.currentUser?.id;
+    if (!currentUserId) return;
 
     this.postService.getPosts().subscribe(posts => {
-      this.likedPosts = posts.filter(post => post.likes?.includes(currentUser));
+      this.likedPosts = posts.filter(post => post.likes?.includes(currentUserId));
     });
   }
-
-  /* ======================= МОДАЛЬНЫЕ ОКНА И ЛАЙКИ ======================= */
   openPost(post: TravelPost): void {
     const generateSlugFn = (text: string): string => {
       const cyr: { [key: string]: string } = {
@@ -392,7 +399,7 @@ goToNextLikedPage(): void {
   closeEditModal(): void {
     this.editingPost = null;
     this.editPhotoPreviewUrl = null;
-    this.editAdditionalPhotosUrls = []; // Очищаем галерею при закрытии
+    this.editAdditionalPhotosUrls = [];
     if (this.editPhotoInput) this.editPhotoInput.nativeElement.value = '';
     if (this.editGalleryInput) this.editGalleryInput.nativeElement.value = '';
   }
@@ -417,27 +424,20 @@ goToNextLikedPage(): void {
         this.loadLikedPosts();
         this.closeEditModal();
       },
-      error: err => console.error('Ошибка при更新поста:', err)
+      error: err => console.error('Ошибка при обновлении поста:', err)
     });
   }
 
   toggleLike(post: TravelPost): void {
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser) return;
-
-    if (!post.likes) post.likes = [];
-
-    const index = post.likes.indexOf(currentUser);
-    if (index !== -1) {
-      post.likes.splice(index, 1);
-    } else {
-      post.likes.push(currentUser);
+    const currentUserId = this.authService.currentUser?.id;
+    if (!currentUserId) {
+      this.showToast('Необходимо авторизоваться!');
+      return;
     }
 
-    this.postService.updatePost(post).subscribe({
-      next: updated => {
-        const idx = this.userPosts.findIndex(p => p.id === updated.id);
-        if (idx !== -1) this.userPosts[idx] = updated;
+    this.postService.toggleLike(post, currentUserId).subscribe({
+      next: () => {
+        this.loadUserPosts();
         this.loadLikedPosts();
       },
       error: err => console.error('Ошибка при обновлении лайка:', err)
@@ -445,7 +445,8 @@ goToNextLikedPage(): void {
   }
 
   hasUserLiked(post: TravelPost): boolean {
-    const currentUser = this.authService.currentUser?.username;
-    return currentUser ? post.likes?.includes(currentUser) ?? false : false;
+    const currentUserId = this.authService.currentUser?.id;
+    return currentUserId ? post.likes?.includes(currentUserId) ?? false : false;
   }
+
 }

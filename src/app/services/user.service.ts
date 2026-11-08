@@ -24,9 +24,13 @@ export class UserService {
     return this.http.post<User>(this.apiUrl, user);
   }
 
-  updateUserPassword(id: string, newPassword: string): Observable<any> {
-  return this.http.patch(`${this.apiUrl}/${id}`, { password: newPassword });
+  updateUserPassword(username: string, password: string): Observable<any> {
+    return this.http.patch('/api/users/reset-password', { username, password });
   }
+
+  updatePasswordById(id: string, password: string): Observable<any> {
+  return this.http.patch(`/api/users/${id}`, { password });
+}
 
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);

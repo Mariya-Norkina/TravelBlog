@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TravelPost } from '../../services/post.service'; 
 import { TruncateWordsPipe } from '../../pipes/truncate-words.pipe';
+import { TuiNotificationService } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-post-card',
@@ -11,10 +12,12 @@ import { TruncateWordsPipe } from '../../pipes/truncate-words.pipe';
   styleUrls: ['./post-card.component.css']
 })
 export class PostCardComponent implements OnChanges {
+  private readonly notifications = inject(TuiNotificationService);
   @Input() post!: TravelPost;
   @Input() isLiked: boolean = false;
   @Input() isLoggedIn: boolean = false;
-  @Input() currentUsername: string | null | undefined = null; // Передаем имя текущего авторизованного пользователя
+  @Input() currentUsername: string | null | undefined = null;
+  @Input() currentUserId: string | null | undefined = null;
   @Input() showAdminActions: boolean = false;
   @Input() isInProfile: boolean = false;
 
@@ -24,23 +27,32 @@ export class PostCardComponent implements OnChanges {
   @Output() delete = new EventEmitter<string>();  // Событие для удаления (передает id поста)
 
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // Если обновился пост или имя текущего пользователя — пересчитываем статус лайка
-    if (this.post && this.currentUsername) {
-      const likesArray = this.post.likes || [];
-      this.isLiked = likesArray.includes(this.currentUsername);
+    ngOnChanges(changes: SimpleChanges): void {
+      if (this.post && this.currentUserId) {
+        this.isLiked = (this.post.likes || []).some(
+          userId => userId.toLowerCase() === this.currentUserId!.toLowerCase()
+        );
+      } else {
+        this.isLiked = false;
+      }
     }
-  }
+
+    private showToast(message: string): void {
+    this.notifications.open(message, {
+      label: '',
+      autoClose: 3500
+    }).subscribe();
+    }
 
     // === ИЗМЕНЕНИЕ: Создаем внутренний метод для обработки лайка ===
-  onLikeClick() {
-    // Если пользователь не залогинен, клик ничего не делает
-    if (!this.isLoggedIn) {
-      alert('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
-      return;
+    onLikeClick(event: MouseEvent): void {
+      event.stopPropagation();
+
+      if (!this.isLoggedIn) {
+        this.showToast('Необходимо авторизоваться, чтобы ставить лайки');
+        return;
+      }
+
+      this.like.emit(this.post);
     }
-    
-    // Просто сообщаем родителю, какой пост кликнули
-    this.like.emit(this.post);
-  }
 }

@@ -1,41 +1,61 @@
 <div class="section section-1">
-  <div class="welcome-message">Добро пожаловать!</div>
-    <p class="welcome-text">Открывай мир — шаг за шагом</p>
-      <p class="star">-✸-</p>
+  <div tuiAnimated class="welcome-message anim-slide-top-1s">Добро пожаловать!</div>
+  <p tuiAnimated class="welcome-text anim-fade-1s-delay-05s">Открывай мир — шаг за шагом</p>
+  <p tuiAnimated class="star anim-shake-08s-delay-08s">-✸-</p>
 </div>
 
-<div class="section section-2">
-  <div class="image-group">
-      <img src="assets/img/ball.jpeg">
-      <img src="assets/img/pep.png" alt="Pep image">
-      <img src="assets/img/wat.png">
-  </div>
-  <div class="text-star-container">
-    <div class="welcome-message" id="cretext">Вдохновляйте и вдохновляйтесь!</div>
-    <p class="text">
-      Добро пожаловать в наш блог, где каждый шаг — это приключение, а каждая тропа ведёт к новым горизонтам. Как блогер и путешественник, вы обладаете уникальной способностью вдохновлять других своими историями о путешествиях и открытиях.
-    </p>
-    <p class="star">-✸-</p>
-  </div>
-</div>
-
-<section class="section-3">
-  <div *ngIf="authService.isLoggedIn()" class="create-post-wrapper">
-    <app-create-post (postCreated)="onPostCreated()"></app-create-post>
-    <div *ngIf="successMessage" class="success-message">
-      {{ successMessage }}
+<div #section2 class="section section-2">
+  @if (sec2Visible) {
+    <div class="image-group">
+      <img tuiAnimated class="anim-flip-y-1s-d0" src="assets/img/ball.jpeg" alt="">
+      <img tuiAnimated class="anim-flip-y-1s-d04" src="assets/img/pep.png" alt="Pep image">
+      <img tuiAnimated class="anim-flip-y-1s-d08" src="assets/img/wat.png" alt="">
     </div>
-  </div>
 
-  <div *ngIf="authService.isLoggedIn()" class="promo-hint-side">
-    <img src="assets/img/arrow.png" class="arrow" alt="Стрелочка" />
-    <p class="text12">Расскажите всем о своём приключении здесь!</p>
-  </div>
-
-<div *ngIf="!authService.isLoggedIn()" class="promo-section-wrapper">
-  <div class="promo-register-box">
-    <h2>Зарегистрируйтесь для начала работы</h2>
-    <button routerLink="/register" id="but2">Зарегистрироваться</button>
-  </div>
+    <div class="text-star-container">
+      <div tuiAnimated class="welcome-message anim-slide-top-1s" id="cretext">
+        Вдохновляйте и вдохновляйтесь!
+      </div>
+      <p tuiAnimated class="text anim-fade-1s-delay-1s">
+        Добро пожаловать в наш блог, где каждый шаг — это приключение, а каждая тропа ведёт к новым горизонтам. Как блогер и путешественник, вы обладаете уникальной способностью вдохновлять других своими историями о путешествиях и открытиях.
+      </p>
+      <button tuiAnimated routerLink="/blog" id="but2" class="blog-btn anim-fade-1s-delay-1s">
+        В блог
+      </button>
+      <p tuiAnimated class="star anim-shake-08s-delay-1s">
+        -✸-
+      </p>
+    </div>
+  }
 </div>
+
+<section #section3 class="section-3">
+  @if (sec3Visible) {
+    @if (authService.isLoggedIn()) {
+      <div tuiAnimated class="create-post-wrapper anim-fade-1s-delay-05s">
+        <app-create-post (postCreated)="onPostCreated()"></app-create-post>
+        @if (successMessage) {
+          <div class="success-message">{{ successMessage }}</div>
+        }
+      </div>
+
+      <div class="promo-hint-side">
+        <img tuiAnimated src="assets/img/arrow.png" class="arrow anim-shake-08s-delay-1s" alt="Стрелочка" />
+        <p tuiAnimated class="text12 anim-slide-right-1s-delay-1s">
+          Расскажите всем о своём приключении здесь!
+        </p>
+      </div>
+    } @else {
+      <div class="promo-section-wrapper">
+        <div class="promo-register-box">
+          <h2 tuiAnimated class="anim-slide-top-1s">
+            Зарегистрируйтесь для начала работы
+          </h2>
+          <button tuiAnimated routerLink="/register" id="but2" class="anim-fade-1s-delay-05s">
+            Зарегистрироваться
+          </button>
+        </div>
+      </div>
+    }
+  }
 </section>

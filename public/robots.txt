@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mariya-norkina.github.io/TravelBlog/sitemap.xml

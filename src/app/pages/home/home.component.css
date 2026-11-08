@@ -132,19 +132,19 @@ h1 {
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  flex-direction: row !important;   /* Жестко ставим форму и подсказку в один горизонтальный ряд */
-  justify-content: center !important; /* Центрируем весь контент по горизонтали экрана */
-  align-items: center !important;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
   height: 100dvh;
   display: flex;
   align-items: center;
 }
 
 .create-post-wrapper {
-  margin-left: 0 !important;        /* Убираем старый маргин, мешавший центрированию */
-  margin-top: 5% !important;
-  width: 50% !important;            /* Отдаем форме половину ширины экрана */
-  max-width: 500px !important;
+  margin-left: 0; 
+  margin-top: 5%;
+  width: 50%;    
+  max-width: 500px;
   display: flex;
   justify-content: center;
 }
@@ -163,7 +163,6 @@ h1 {
   transform: translateY(-10px);
 }
 
-
 .promo-section-wrapper {
   display: flex;
   flex-direction: row;
@@ -175,39 +174,35 @@ h1 {
   position: relative;
 }
 
-/* Левая сторона, содержащая текст и стрелочку */
 .promo-hint-side {
   position: relative;
-  width: 50% !important;            /* Отдаем вторую половину ширины экрана */
-  display: flex !important;
-  flex-direction: row !important;   /* Внутри блока: стрелочка СЛЕВА, текст СПРАВА */
-  align-items: center !important;   /* Выравнивает стрелку и текст по одной оси высоты */
-  justify-content: center !important; /* Центрирует стрелку и текст в их половинке экрана, сдвигая правее */
+  width: 50%;            
+  display: flex;
+  flex-direction: row;   
+  align-items: center;   
+  justify-content: center; 
 }
 
-/* Текст подсказки: цвет изменен на белый, чтобы он не сливался с фоном */
 .text12 {
-  font-family: Arial, sans-serif !important;
-  font-size: 1.6em !important; 
-  color: #6b8f0f;/* Возвращаем контрастный белый цвет вместо зеленого */
-  text-align: center !important;      /* Выравниваем текст по левому краю, к стрелочке */
-  line-height: 1.4 !important;
-  max-width: 500px !important; 
+  font-family: Arial, sans-serif;
+  font-size: 1.6em; 
+  color: #6b8f0f;
+  text-align: center;      
+  line-height: 1.4;
+  max-width: 500px; 
   margin-left: 5%;  
 }
 
-/* Стрелочка позиционируется абсолютно и указывает на форму регистрации справа */
 .arrow {
-  position: static !important;      /* Отменяем абсолютные координаты, привязываем к тексту */
-  width: 120px !important;
-  height: auto !important;
+  position: static;      
+  width: 120px;
+  height: auto;
   z-index: 3;
-  /* Разворачиваем её, чтобы она указывала из центра налево (на форму) */
-  transform: rotate(140deg) !important; 
+
+  transform: rotate(140deg); 
   margin-left: 14%;
 }
 
-/* Правая сторона: Заголовок и кнопка */
 .promo-register-box {
   display: flex;
   flex-direction: column; 
@@ -219,8 +214,8 @@ h1 {
 .promo-register-box h2 {
   font-family: 'MyCustomFont', Arial, sans-serif;
   font-size: 2.4em;
-  color: #ffd756; /* Золотистый цвет заголовка */
-  /* margin-bottom: 20px; */
+  color: #ffd756; 
+
 }
 
 #but2 {
@@ -237,11 +232,9 @@ h1 {
 
 #but2:hover {
   background-color: #c3b517;
-  transform: translateY(-2px); /* Легкий интерактивный подъем при наведении */
+  transform: translateY(-2px); 
 }
 
-
-/*МОБИЛЬНЫЕ УСТРОЙСТВА*/
 @media (max-width: 1280px) {
   .arrow {
   left: 4%; 
@@ -253,13 +246,13 @@ h1 {
 
 }
 @media (max-width: 768px) {
-  /* 1. Общие настройки для всех секций */
+
   .section {
-    height: auto; /* Убираем жесткие 100vh, чтобы контент не вылезал из экранов */
+    height: auto; 
     min-height: 100vh;
     padding: 40px 20px;
     box-sizing: border-box;
-    flex-direction: column; /* Перестраиваем всё в одну вертикальную колонку */
+    flex-direction: column; 
     justify-content: center;
     align-items: center;
   }
@@ -269,9 +262,8 @@ h1 {
    flex-direction: column;
   }
 
-  /* 2. СЕКЦИЯ 1: Приветствие */
   .welcome-message {
-    font-size: 3.5em; /* Уменьшаем гигантский шрифт 7em */
+    font-size: 3.5em; 
     max-width: 100%;
     margin-bottom: 20px;
   }
@@ -281,145 +273,135 @@ h1 {
     max-width: 100%;
   }
 
-  /* 3. СЕКЦИЯ 2: Текст со звездами и блок картинок */
   .section-2 {
     flex-direction: column;
   }
 
    #cretext {
-    margin-left: 0; /* Сбрасываем десктопный сдвиг */
+    margin-left: 0; 
     font-size: 2em;
   }
 
   .text-star-container {
     max-width: 100%;
-    margin: 20px 0 ; /* Центрируем */
+    margin: 20px 0 ; 
     text-align: center;
-    
+
   }
 
   .text {
-    text-align: justify !important; 
-    font-size: 1.1em !important;     /* Уменьшили размер шрифта текста */
-    padding: 0 3%!important;       /* Увеличили боковые отступы внутри параграфа */
+    text-align: justify; 
+    font-size: 1.1em;     
+    padding: 0 3%;       
   }
 
-  /* Блок картинок */
   .image-group {
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-top: 20px !important; 
-    display: flex !important;
-    flex-direction: row !important; 
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px; 
+    display: flex;
+    flex-direction: row; 
     justify-content: center;
-    align-items: center;              /* Центрирование по вертикали для шахматного порядка */
-    gap: 15px;                        /* Немного увеличили расстояние между картинками */
+    align-items: center;              
+    gap: 15px;                        
   }
 
   .image-group img {
-    width: 30% !important; 
-    height: 180px !important;         /* Увеличили высоту картинок со 120px до 180px */
+    width: 30%; 
+    height: 180px;         
     object-fit: cover; 
-    border-radius: 8px;               /* Опционально: легкое скругление для аккуратности */
+    border-radius: 8px;               
   }
 
-  /* Сбрасываем десктопные абсолютные сдвиги */
   .image-group img:nth-child(1),
   .image-group img:nth-child(2),
   .image-group img:nth-child(3) {
-    position: relative !important;
-    margin: 0 !important;
+    position: relative;
+    margin: 0;
   }
 
-  /* Шахматный порядок (Эффект лесенки/волны) */
   .image-group img:nth-child(1) {
-    transform: translateY(-15px);     /* Первую картинку приподнимаем вверх */
+    transform: translateY(-15px);     
   }
 
   .image-group img:nth-child(2) {
-    transform: translateY(15px);      /* Вторую (среднюю) картинку опускаем вниз */
+    transform: translateY(15px);      
   }
 
   .image-group img:nth-child(3) {
-    transform: translateY(-15px);     /* Третью картинку приподнимаем вверх */
+    transform: translateY(-15px);     
   }
 
   .section-3 {
-    height: auto !important;           
+    height: auto;           
     min-height: 100dvh;
-    display: flex !important;
-    flex-direction: column !important; /* Строим элементы вертикально */
-    justify-content: flex-start !important; 
-    padding: 130px 20px 40px 20px !important;    
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    padding: 130px 20px 40px 20px;    
     box-sizing: border-box;
-    gap: 20px !important;              /* Комфортный зазор между подсказкой и формой */
+    gap: 20px;              
     background-image: url('/assets/img/back333.png');
   }
 
-  /* Блок подсказки (текст + стрелочка) СВЕРХУ */
   .promo-hint-side {
-    display: flex !important;          
-    flex-direction: column !important; /* Выстраивает элементы вертикально в стопку */
-    justify-content: center !important;
-    align-items: center !important;    
-    width: 100% !important;            
-    margin-left: 0 !important;         
+    display: flex;          
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;    
+    width: 100%;            
+    margin-left: 0;         
     text-align: center;
-    order: 1 !important;               /* Сама подсказка находится выше формы */
-    gap: 10px !important;              /* Удобный зазор между текстом и стрелочкой */
+    order: 1;               
+    gap: 10px;              
   }
 
-  /* Текст подсказки на мобильном (СНАЧАЛА) */
   .text12 {
-    font-size: 1.3em !important;       
-    text-align: center !important;     
-    max-width: 100% !important;
-    margin: 0 !important;     
-    color: #ffffff !important;
-    order: 1 !important;               /* Жестко ставит текст первым по порядку */
+    font-size: 1.3em;       
+    text-align: center;     
+    max-width: 100%;
+    margin: 0;     
+    color: #ffffff;
+    order: 1;               
   }
 
-  /* Стрелочка, смотрящая ВНИЗ (ПОТОМ) */
   .arrow {
-    position: static !important;       
-    width: 40px !important;            
-    height: auto !important;
-    margin: 0 !important;              
-    order: 2 !important;               /* Жестко ставит стрелочку под текстом */
-    
-    /* Поворот стрелки вертикально вниз на форму */
-    transform: rotate(90deg) !important; 
+    position: static;       
+    width: 40px;            
+    height: auto;
+    margin: 0;              
+    order: 2;               
+
+    transform: rotate(90deg); 
   }
 
-  /* Форма СНИЗУ */
   .create-post-wrapper {
-    width: 85% !important;             /* ИЗМЕНЕНО: ширина теперь ровно 80% от экрана */
-    max-width: 85% !important;         /* ИЗМЕНЕНО: жестко ограничили максимальную ширину */        
-    margin: 0 auto !important; 
-    height: 80% !important;            /* ИЗМЕНЕНО: высота формы теперь ровно 70% */
-    order: 2 !important;                /* Помещает форму на второе место (ниже подсказки) */
+    width: 85%;             
+    max-width: 85%;                 
+    margin: 0 auto; 
+    height: 80%;            
+    order: 2;                
   }
 
-  /* Промо-блок (Текст подсказки и кнопка регистрации для гостей) */
   .promo-section-wrapper {
-    flex-direction: column !important; 
-    justify-content: center !important; 
-    align-items: center !important;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
     width: 100%;
-    margin-top: 0 !important;           
-    order: 3 !important;
+    margin-top: 0;           
+    order: 3;
   }
 
   .promo-register-box {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;     
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;     
     text-align: center;
   }
 
   .promo-register-box h2 {
-    font-size: 1.8em !important;
+    font-size: 1.8em;
     margin-bottom: 20px;
   }
 

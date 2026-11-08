@@ -1,19 +1,23 @@
-import { Component, HostListener, OnInit, Input } from '@angular/core';
+import { Component, HostListener, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router'; 
 import { TravelPost, PostService } from '../../services/post.service';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service'; 
 import { PostCommentsComponent } from '../comments/comments.component.';
+import { TuiAnimated } from '@taiga-ui/cdk';
+import { TuiNotificationService } from '@taiga-ui/core';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-post-modal',
   standalone: true,
-  imports: [CommonModule, PostCommentsComponent],
+  imports: [CommonModule, PostCommentsComponent, TuiAnimated],
   templateUrl: './post-modal.component.html',
   styleUrls: ['./post-modal.component.css']
 })
 export class PostModalComponent implements OnInit {
+  private readonly notifications = inject(TuiNotificationService);
   @Input() post!: TravelPost;
   isLoading: boolean = true; 
   
@@ -26,8 +30,25 @@ export class PostModalComponent implements OnInit {
     private router: Router,        // Позволяет вернуться назад на страницу блога
     private postService: PostService,
     private userService: UserService,
-    public authService: AuthService
+    public authService: AuthService,
+    private titleService: Title,
+    private metaService: Meta
   ) {}
+
+  private showToast(message: string): void {
+    this.notifications.open(message, {
+      label: '',
+      autoClose: 3500
+    }).subscribe();
+  }
+
+  showAuthorPopover(): void {
+  console.log('MOUSE ENTER AUTHOR');
+}
+
+hideAuthorPopover(): void {
+  console.log('MOUSE LEAVE AUTHOR');
+}
 
   ngOnInit(): void {
     if (this.post) {
@@ -75,6 +96,25 @@ export class PostModalComponent implements OnInit {
         this.post = foundPost;
         this.isLoading = false;
 
+        this.titleService.setTitle(
+          `${this.post.title} — Блог о путешествиях`
+        );
+
+        this.metaService.updateTag({
+          name: 'description',
+          content: `Читайте публикацию «${this.post.title}» от автора ${this.post.author} в блоге о путешествиях.`
+        });
+
+        this.metaService.updateTag({
+          property: 'og:type',
+          content: 'article'
+        });
+
+        this.metaService.updateTag({
+          property: 'og:title',
+          content: this.post.title
+        });
+
         if (this.post.viewsCount !== undefined) {
           this.post.viewsCount++; 
         } else {
@@ -105,40 +145,52 @@ export class PostModalComponent implements OnInit {
     });
   }
 
-  get isLiked(): boolean {
-    const currentUsername = this.authService.currentUser?.username;
-    if (!currentUsername || !this.post || !this.post.likes) return false;
-    return this.post.likes.includes(currentUsername);
-  }
+    isPostLiked(post: TravelPost): boolean {
+      const currentUserId = this.authService.currentUser?.id;
 
-  onLikeClick(): void {
-    const currentUsername = this.authService.currentUser?.username;
-    if (!this.authService.isLoggedIn() || !currentUsername) {
-      alert('Пожалуйста, авторизуйтесь, чтобы ставить лайки!');
-      return;
+      if (!currentUserId || !post?.likes) {
+        return false;
+      }
+
+      return post.likes.some(
+        id => id.toLowerCase() === currentUserId.toLowerCase()
+      );
     }
 
-    this.postService.toggleLike(this.post, currentUsername).subscribe({
-      next: (updatedPost: TravelPost) => {
-        this.post.likes = updatedPost.likes || [];
-        this.post.likesCount = updatedPost.likesCount;
-        this.post.likedByUsers = updatedPost.likedByUsers;
-      },
-      error: (err) => console.error('Ошибка при сохранении лайка:', err)
-    });
-  }
+    onLikeClick(event: MouseEvent): void {
+      event.stopPropagation();
 
-goBackToBlog(): void {
-  const navigationState = this.router.getCurrentNavigation()?.extras.state || window.history.state;
-  
-  if (navigationState && navigationState.fromProfile) {
-    this.router.navigate(['/login'], {
-      state: { activeTab: 'liked' }
-    }); 
-  } else {
-    this.router.navigate(['/blog']);
-  }
-}
+      const currentUserId = this.authService.currentUser?.id;
+
+      if (!this.authService.isLoggedIn() || !currentUserId) {
+        this.showToast('Необходимо авторизоваться, чтобы ставить лайки!');
+        return;
+      }
+
+      this.postService.toggleLike(this.post, currentUserId).subscribe({
+        next: (updatedPost: TravelPost) => {
+          this.post.likes = updatedPost.likes || [];
+          this.post.likesCount = updatedPost.likesCount ?? this.post.likes.length;
+          this.post.likedByUsers = updatedPost.likedByUsers || [];
+        },
+        error: (err) => {
+          console.error('Ошибка при сохранении лайка:', err);
+          this.showToast('Не удалось сохранить лайк. Попробуйте ещё раз.');
+        }
+      });
+    }
+
+    goBackToBlog(): void {
+      const navigationState = this.router.getCurrentNavigation()?.extras.state || window.history.state;
+      
+      if (navigationState && navigationState.fromProfile) {
+        this.router.navigate(['/login'], {
+          state: { activeTab: 'liked' }
+        }); 
+      } else {
+        this.router.navigate(['/blog']);
+      }
+    }
 
   openFullImage(index: number): void { this.activeFullImageIndex = index; }
   closeFullImage(): void { this.activeFullImageIndex = null; }

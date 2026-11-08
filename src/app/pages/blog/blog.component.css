@@ -186,18 +186,17 @@ h2 {
 /* Эмодзи по центру */
 .date-emoji {
   font-size: 1.2em;
-  pointer-events: none; /* Клик проходит сквозь эмодзи на инпут */
+  pointer-events: none;
   z-index: 1;
 }
 
 /* Делаем сам инпут абсолютно прозрачным и растягиваем на всю кнопку */
 .date-container input[type="date"] {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0; 
+  opacity: 0;
   cursor: pointer;
   z-index: 2;
 }
@@ -238,6 +237,12 @@ h2 {
   color: #58710e;
 }
 
+.blog-header-slot {
+  min-height: 155px;
+  display: flex;
+  flex-direction: column;
+}
+
 
 @media (max-width: 576px) {
   .search-bar-row {
@@ -260,5 +265,9 @@ h2 {
   .date-container {
     flex-shrink: 0; 
     width: 44px;
+  }
+
+  .blog-header-slot {
+    min-height: 145px;
   }
 }

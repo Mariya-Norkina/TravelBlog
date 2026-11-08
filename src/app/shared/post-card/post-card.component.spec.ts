@@ -1,23 +1,61 @@
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
-import { PostCard } from './post-card';
+import { PostCardComponent } from './post-card.component';
+import { TravelPost } from '../../services/post.service';
+import { TuiNotificationService } from '@taiga-ui/core';
 
-describe('PostCard', () => {
-  let component: PostCard;
-  let fixture: ComponentFixture<PostCard>;
+describe('PostCardComponent', () => {
+  let component: PostCardComponent;
+  let fixture: ComponentFixture<PostCardComponent>;
+
+  const mockPost: TravelPost = {
+    id: 'post-1',
+    title: 'Путешествие в Италию',
+    description: 'Описание путешествия',
+    date: '2026-11-08',
+    author: 'Tester',
+    likes: [],
+    likesCount: 0
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PostCard]
+      imports: [PostCardComponent],
+      providers: [
+        {
+          provide: TuiNotificationService,
+          useValue: {
+            open: jasmine.createSpy().and.returnValue(of(null))
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .overrideComponent(PostCardComponent, {
+        set: { template: '' }
+      })
+      .compileComponents();
 
-    fixture = TestBed.createComponent(PostCard);
+    fixture = TestBed.createComponent(PostCardComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.componentRef.setInput('post', mockPost);
   });
 
-  it('should create', () => {
+  it('должен создаваться', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
+  });
+
+  it('должен отправлять событие лайка авторизованному пользователю', () => {
+    fixture.componentRef.setInput('isLoggedIn', true);
+    fixture.detectChanges();
+
+    const likeSpy = spyOn(component.like, 'emit');
+
+    component.onLikeClick(new MouseEvent('click'));
+
+    expect(likeSpy).toHaveBeenCalledWith(mockPost);
   });
 });

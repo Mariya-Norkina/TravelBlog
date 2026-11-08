@@ -1,7 +1,7 @@
 <body>
   <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="form">
-    <img src="../../../assets/img/cloud.png" class="corner top-left" alt="Левый верхний угол">
-    <img src="../../../assets/img/back12.png" class="corner bottom-right" alt="Нижний правый угол">
+    <img src="../../../assets/img/cloud.png" tuiAnimated class="corner top-left anim-slide-right-safe-2s" alt="правый верхний угол">
+    <img src="../../../assets/img/back12.png" tuiAnimated class="corner bottom-right anim-slide-left-safe-2s" alt="левый правый угол">
       <h2>{{ isLoginMode ? 'Авторизация' : 'Регистрация' }}</h2>
 
     <label>

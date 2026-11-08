@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router'; // Добавили роутер
+import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
-import { AuthService } from '../../services/auth.service'; // Добавили AuthService
+import { AuthService } from '../../services/auth.service';
+import { TuiAnimated } from '@taiga-ui/cdk';
 
 interface User {
   id?: string;
@@ -17,12 +18,12 @@ interface User {
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, TuiAnimated],
 })
 export class RegisterComponent implements OnInit {
-  authForm: FormGroup; // Переименовали форму в универсальную authForm
+  authForm: FormGroup; 
   message: string = '';
-  isLoginMode: boolean = false; // Переключатель режимов: false = Регистрация, true = Вход
+  isLoginMode: boolean = false;
   isPasswordFocused: boolean = false; 
 
   constructor(
@@ -60,78 +61,106 @@ export class RegisterComponent implements OnInit {
     return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
   }
 
-  onSubmit() {
-    const credentials = this.authForm.value;
-    const username = credentials.username ? credentials.username.trim() : '';
-    const password = credentials.password ? credentials.password.trim() : '';
 
-    if (!username || !password) {
-      this.message = 'Пожалуйста, заполните все поля';
-      return;
-    }
+onSubmit(): void {
+  const credentials = this.authForm.value;
 
-    if (!this.isLoginMode) {
-      const usernameHasLetters = /[A-Za-zА-Яа-яЁё]/.test(username);
-      if (!usernameHasLetters) {
-        this.message = 'Имя пользователя не может состоять только из цифр. Обязательно должна быть хотя бы одна буква!';
-        return; 
-      }
+  const username = credentials.username
+    ? credentials.username.trim()
+    : '';
 
-      if (password.length < 8) {
-        this.message = 'Пароль должен быть не менее 8 символов длиной!';
-        return; 
-      }
+  const password = credentials.password
+    ? credentials.password.trim()
+    : '';
 
-      const passwordHasLetters = /[A-Za-zА-Яа-яЁё]/.test(password);
-      if (!passwordHasLetters) {
-        this.message = 'Пароль должен содержать хотя бы одну букву!';
-        return;
-      }
-
-      const passwordHasSymbols = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-      if (!passwordHasSymbols) {
-        this.message = 'Пароль должен содержать минимум 1 специальный символ (например: !, @, #, $, %, ?, * и др.)!';
-        return; 
-      }
-    }
-
-    if (this.isLoginMode) {
-      this.userService.getUsers().subscribe((users: any[]) => {
-        const user = users.find(u => 
-          (u.username === username || u.id === username) && 
-          u.password === password
-        );
-
-        if (!user) {
-          this.message = 'Неверный логин/ID или пароль';
-        } else {
-          this.authService.login(user.id, user.username);
-          this.router.navigate(['/login']); 
-        }
-      });
-    } else {
-      this.userService.getUsers().subscribe((users: any[]) => {
-        const isUserExists = users.some(u => u.username.toLowerCase() === username.toLowerCase());
-
-        if (isUserExists) {
-          this.message = 'Пользователь с таким именем уже зарегистрирован!';
-          return; 
-        }
-
-        this.userService.addUser({ username, password }).subscribe({
-          next: (createdUser: any) => {
-            const userId = createdUser?.id || 'gen-' + Math.random().toString(36).substr(2, 9);
-            this.authService.login(userId, username);
-            this.router.navigate(['/login'], { state: { justRegistered: true } });
-          },
-          error: (err) => {
-            this.message = 'Произошла ошибка при регистрации';
-            console.error(err);
-          }
-        });
-      });
-    }
+  if (!username || !password) {
+    this.message = 'Пожалуйста, заполните все поля';
+    return;
   }
+
+  // ВХОД
+  if (this.isLoginMode) {
+
+    this.authService.loginServer({
+      username,
+      password
+    }).subscribe({
+
+      next: (response) => {
+
+        console.log('Авторизация успешна!');
+        console.log('Получен JWT:', !!response.token);
+        console.log('Пользователь:', response.user);
+
+        // Переходим в личный кабинет
+        this.router.navigate(['/profile'], {
+          replaceUrl: true
+        });
+
+      },
+
+      error: (err) => {
+
+        console.error('Ошибка авторизации:', err);
+
+        this.message =
+          err.error?.message || 'Неверный логин или пароль';
+
+      }
+
+    });
+
+  } else {
+
+    // РЕГИСТРАЦИЯ
+    this.authService.register({
+      username,
+      password,
+      email: `${username}@blog.com`
+    }).subscribe({
+
+      next: () => {
+
+        // После регистрации автоматически авторизуемся
+        this.authService.loginServer({
+          username,
+          password
+        }).subscribe({
+
+          next: (response) => {
+
+            console.log('Регистрация и авторизация успешны!');
+            console.log('JWT получен:', !!response.token);
+
+            this.router.navigate(['/profile'], {
+              state: { justRegistered: true },
+              replaceUrl: true
+            });
+
+          },
+
+          error: (err) => {
+            console.error('Ошибка автоматического входа:', err);
+            this.message = 'Регистрация успешна, но войти не удалось. Попробуйте войти вручную.';
+            this.isLoginMode = true;
+          }
+
+        });
+
+      },
+
+      error: (err) => {
+        console.error('Ошибка регистрации:', err);
+
+        this.message =
+          err.error?.message || 'Произошла ошибка при регистрации';
+      }
+
+    });
+
+  }
+}
+
 
 
   onPasswordFocus() {
@@ -139,8 +168,6 @@ export class RegisterComponent implements OnInit {
   }
 
   onPasswordBlur() {
-    // Таймаут в 200мс нужен для того, чтобы если пользователь кликнул 
-    // именно НА НАДПИСЬ «Сбросить», событие клика успело сработать до того, как надпись исчезнет
     setTimeout(() => {
       this.isPasswordFocused = false;
     }, 200);
@@ -151,38 +178,28 @@ export class RegisterComponent implements OnInit {
   return passwordVal && passwordVal.trim().length > 0;
 }
 
-// Метод сброса и установки нового пароля по надписи
-resetPassword() {
-  const accountInput = prompt('Введите ваше имя пользователя или уникальный ID для сброса пароля:');
-  if (!accountInput) return;
+  resetPassword() {
+    const accountInput = prompt('Введите ваше имя пользователя для сброса пароля:');
+    if (!accountInput) return;
 
-  this.userService.getUsers().subscribe((users: any[]) => {
-    const user = users.find(u => u.username === accountInput || u.id === accountInput);
-
-    if (!user) {
-      alert('Пользователь с таким именем или ID не найден!');
-    } else {
-      const newPassword = prompt(`Пользователь найден: ${user.username}.\nВведите новый пароль:`);
-      if (!newPassword || newPassword.trim().length === 0) {
-        alert('Пароль не может быть пустым!');
-        return;
-      }
-
-      this.userService.updateUserPassword(user.id, newPassword).subscribe({
-        next: () => {
-          alert('Пароль успешно изменен! Теперь вы можете войти.');
-          this.authForm.get('password')?.setValue(''); // Очищаем поле
-        },
-        error: (err) => {
-          console.error(err);
-          alert('Ошибка при смене пароля.');
-        }
-      });
+    const newPassword = prompt(`Введите новый пароль для аккаунта ${accountInput}:`);
+    if (!newPassword || newPassword.trim().length === 0) {
+      alert('Пароль не может быть пустым!');
+      return;
     }
-  });
-}
 
-  // Метод для переключения режимов (Вход / Регистрация) в HTML шаблоне
+    this.userService.updateUserPassword(accountInput, newPassword).subscribe({
+      next: () => {
+        alert('Пароль успешно изменен! Теперь вы можете войти.');
+        this.authForm.get('password')?.setValue('');
+      },
+      error: (err) => {
+        alert(err.error?.message || 'Ошибка при смене пароля. Возможно, пользователь не найден.');
+      }
+    });
+  }
+
+
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
     this.message = '';

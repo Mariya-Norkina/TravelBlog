@@ -1,5 +1,4 @@
 <div class="post-card" [class.in-profile]="isInProfile">
-  <!-- Обложка: если её нет, активируется класс .no-image с бежевой заливкой -->
   <div class="post-image" [class.no-image]="!post.photoBase64">
     <img *ngIf="post.photoBase64" [src]="post.photoBase64" alt="{{ post.title }}">
   </div>
@@ -14,15 +13,13 @@
   <div class="post-photo-placeholder">
     <button type="button" (click)="detail.emit(post)" class="detail-btn">Подробнее</button>
     
-    <!-- Дополнительные кнопки управления: видны только автору поста -->
     <ng-container class="post-admin-actions" *ngIf="showAdminActions && currentUsername && post.author === currentUsername">
       <button type="button" class="action-btn edit-btn" title="Редактировать пост" (click)="edit.emit(post)">✎</button>
       <button type="button" class="action-btn delete-btn" title="Удалить пост" (click)="delete.emit(post.id)">🗑</button>
     </ng-container>
 
   <div class="like-container">
-    <button class="like-button" [class.liked]="isLiked" (click)="onLikeClick()">✸</button>
-    <!-- Выводим реальную длину массива лайков, если он есть, иначе likesCount или 0 -->
+    <button class="like-button" [class.liked]="isLiked" (click)="onLikeClick($event)">✸</button>
     <span class="like-count">
     {{ post.likes ? post.likes.length : (post.likesCount || 0) }}
     </span>

@@ -1,20 +1,26 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService, TravelPost } from '../../services/post.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../../shared/post-card/post-card.component';
 import { Router, RouterModule } from '@angular/router';
+import { TuiAnimated } from '@taiga-ui/cdk';
+import { TuiNotificationService } from '@taiga-ui/core';
+import { Title, Meta } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-blog',
   standalone: true,
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.css'],
-  imports: [CommonModule, PostCardComponent, FormsModule, RouterModule] 
+  imports: [CommonModule, PostCardComponent, FormsModule, RouterModule, TuiAnimated] 
 })
 export class BlogComponent implements OnInit {
-
+  private readonly titleService = inject(Title);
+  private readonly metaService = inject(Meta)
+  private readonly notifications = inject(TuiNotificationService);
   publishedPosts: TravelPost[] = [];
   filteredPosts: TravelPost[] = [];
   selectedPost: TravelPost | null = null;
@@ -22,6 +28,7 @@ export class BlogComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 12;
   selectedDate: string = '';
+  postsLoaded: boolean = false;
 
   constructor(
     private postService: PostService,
@@ -30,8 +37,22 @@ export class BlogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.updatePageSize(window.innerWidth);
-    this.loadPosts();
+  this.titleService.setTitle('Блог о путешествиях — интересные истории и публикации');
+
+  this.metaService.updateTag({
+    name: 'description',
+    content: 'Читайте истории путешественников, открывайте интересные места и делитесь впечатлениями о поездках.'
+  });
+
+  this.updatePageSize(window.innerWidth);
+  this.loadPosts();
+  }
+
+  private showToast(message: string): void {
+    this.notifications.open(message, {
+      label: '',
+      autoClose: 3500
+    }).subscribe();
   }
 
     // Декоратор HostListener отслеживает изменение размеров экрана на лету
@@ -50,13 +71,19 @@ export class BlogComponent implements OnInit {
     }
   }
 
-  private loadPosts(): void {
-    this.postService.getPosts().subscribe(posts => {
-      this.publishedPosts = posts.reverse();
-      this.filteredPosts = [...this.publishedPosts]; // Изначально показываем все посты
-      this.currentPage = 1;
-    });
-  }
+    private loadPosts(): void {
+      this.postService.getPosts().subscribe(posts => {
+        this.publishedPosts = posts.reverse();
+        this.filteredPosts = [...this.publishedPosts];
+        this.currentPage = 1;
+
+        if (!this.postsLoaded) {
+          setTimeout(() => {
+            this.postsLoaded = true;
+          }, 200);
+        }
+      });
+    }
 
   onSearch(): void {
     const query = this.searchQuery.trim().toLowerCase();
@@ -81,9 +108,6 @@ private applyFilters(): void {
       post.title.toLowerCase().includes(query) || 
       post.author.toLowerCase().includes(query);
 
-    // Проверка соответствия дате
-    // Примечание: предполагается, что у вашего post.date формат строки начинается так же: "YYYY-MM-DD"
-    // Если в посте дата сохранена как ISO-строка, то post.date.startsWith(this.selectedDate) отработает идеально.
     const matchesDate = !this.selectedDate || 
       (post.date && post.date.startsWith(this.selectedDate));
 
@@ -152,31 +176,29 @@ onSearchInputChange(): void {
     this.selectedPost = null;
   }
   
-  toggleLike(post: TravelPost): void {
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser) return;
+      toggleLike(post: TravelPost): void {
+        const currentUserId = this.authService.currentUser?.id;
 
-    if (!post.likes) post.likes = [];
+        if (!currentUserId) {
+          this.showToast('Необходимо авторизоваться!');
+          return;
+        }
 
-    const index = post.likes.indexOf(currentUser);
-    if (index !== -1) {
-      post.likes.splice(index, 1); 
-    } else {
-      post.likes.push(currentUser);
-    }
+        this.postService.toggleLike(post, currentUserId).subscribe({
+          next: () => {
+            this.loadPosts();
+          },
+          error: err => {
+            console.error('Ошибка при сохранении лайка:', err);
+          }
+        });
+      }
 
-    this.postService.updatePost(post).subscribe({
-      next: updated => {
-        const idx = this.publishedPosts.findIndex(p => p.id === updated.id);
-        const fIdx = this.filteredPosts.findIndex(p => p.id === updated.id);
-        if (idx !== -1) this.publishedPosts[idx] = updated;
-      },
-      error: err => console.error('Ошибка при обновлении лайка:', err)
-    });
-  }
+      hasUserLiked(post: TravelPost): boolean {
+        const currentUserId = this.authService.currentUser?.id;
 
-  hasUserLiked(post: TravelPost): boolean {
-    const currentUser = this.authService.currentUser?.username;
-    return currentUser ? post.likes?.includes(currentUser) ?? false : false;
-  }
+        return currentUserId
+          ? post.likes?.includes(currentUserId) ?? false
+          : false;
+      }
 }

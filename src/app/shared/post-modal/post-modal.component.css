@@ -84,7 +84,7 @@
 .post-content {
   padding: 20px;
   text-align: center;
-  overflow-y: auto;
+  overflow: visible;
   flex: 1;
 }
 
@@ -325,8 +325,10 @@
   justify-content: center;
   margin-bottom: 25px;
   position: relative;
-  z-index: 99;
+  z-index: 9999;
 }
+
+
 
 /* Контейнер-якорь для позиционирования выпадающего окна */
 .author-badge-container {
@@ -339,6 +341,13 @@
   border-radius: 20px;
   cursor: pointer;
   user-select: none;
+}
+
+.author-popover-card.visible {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* Маленькая аватарка в посте */
@@ -377,6 +386,7 @@
   opacity: 0;
   pointer-events: none; 
   transition: opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  visibility: hidden;
 }
 
 /* Небольшая стрелочка внизу бежевой карточки */
@@ -393,9 +403,17 @@
 
 /* ЭФФЕКТ НАВЕДЕНИЯ: Показываем карточку */
 .author-badge-container:hover .author-popover-card {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0); /* Плавное смещение вверх */
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(-50%) translateY(0) !important;
+  z-index: 99999;
+}
+
+.author-badge-container {
+  position: relative;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
 }
 
 /* Стили элементов внутри всплывающего окна */

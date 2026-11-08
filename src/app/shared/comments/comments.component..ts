@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TravelPost, PostService, PostComment } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
+import { TuiNotificationService } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-post-comments',
@@ -13,8 +14,9 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./comments.component.css']
 })
 export class PostCommentsComponent {
+  private readonly notifications = inject(TuiNotificationService);
   @Input() post!: TravelPost;
-  @Output() closeParentModal = new EventEmitter<void>(); // Событие для закрытия всей модалки при уходе на регистрацию
+  @Output() closeParentModal = new EventEmitter<void>();
 
   newCommentText: string = '';
   showErrorAlert: boolean = false;
@@ -24,10 +26,8 @@ export class PostCommentsComponent {
   editedCommentText: string = '';
   activePickerCommentId: string | null = null;
 
-  // Список доступных реакций по вашему списку
 availableEmojis: string[] = ['😀', '😂', '😍', '😎', '🤔', '😭', '👍', '🔥', '❤️', '🎉', '😺', '💫', '🏝', '🏕'];
 
-// Добавьте метод для переключения панели реакций по клику:
 togglePicker(event: Event, commentId: string): void {
   event.stopPropagation(); // Останавливаем всплытие, чтобы клик не закрывал панель сразу
   if (this.activePickerCommentId === commentId) {
@@ -49,6 +49,13 @@ closeAllPickers(): void {
     private router: Router
   ) {}
 
+  private showToast(message: string): void {
+    this.notifications.open(message, {
+      label: '',
+      autoClose: 3500
+    }).subscribe();
+  }
+
   private getCurrentFormattedDateTime(): string {
     const now = new Date();
     const date = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -57,103 +64,82 @@ closeAllPickers(): void {
   }
   
 
-  submitComment(): void {
-    if (!this.newCommentText.trim()) return;
+    submitComment(): void {
+      const text = this.newCommentText.trim();
 
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser) {
-      this.triggerError('Вы должны быть авторизованы, чтобы оставить комментарий');
-      return;
-    }
+      if (!text) return;
 
-    if (!this.post.comments) {
-      this.post.comments = [];
-    }
+      const currentUser = this.authService.currentUser?.username;
 
-    const comment: PostComment = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-      username: currentUser,
-      text: this.newCommentText.trim(),
-      date: this.getCurrentFormattedDateTime(),
-      reactions: {}
-    };
-
-    const updatedPost: TravelPost = {
-      ...this.post,
-      comments: [...this.post.comments, comment]
-    };
-
-    this.postService.updatePost(updatedPost).subscribe({
-      next: (savedPost) => {
-        this.post.comments = savedPost.comments;
-        this.newCommentText = '';
-      },
-      error: (err) => {
-        console.error('Ошибка сохранения комментария:', err);
-        this.triggerError('Не удалось опубликовать комментарий.');
+      if (!currentUser) {
+        this.showToast('Необходимо авторизоваться!');
+        return;
       }
-    });
-  }
+
+      this.postService.addComment(this.post.id, text).subscribe({
+        next: (savedComment: PostComment) => {
+
+          if (!this.post.comments) {
+            this.post.comments = [];
+          }
+
+          this.post.comments = [
+            ...this.post.comments,
+            savedComment
+          ];
+
+          this.newCommentText = '';
+        },
+
+        error: (err) => {
+          console.error('Ошибка сохранения комментария:', err);
+
+          this.triggerError(
+            err.error?.message || 'Не удалось опубликовать комментарий.'
+          );
+        }
+      });
+    }
 
   toggleReaction(comment: PostComment, emoji: string): void {
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser) {
-      this.triggerError('Войдите в профиль, чтобы оставлять реакции');
+    const currentUserId = this.authService.currentUser?.id;
+
+    if (!this.authService.isLoggedIn() || !currentUserId) {
+      this.showToast('Необходимо авторизоваться, чтобы ставить реакции!');
       return;
     }
 
-    if (!comment.reactions) {
-      comment.reactions = {};
-    }
-
-    const reactions = comment.reactions;
-    const userAlreadyHadThisEmoji = reactions[emoji]?.includes(currentUser);
-
-    // Правило: Только ОДНА реакция на комментарий. Удаляем имя юзера изо всех остальных смайликов этого комментария
-    Object.keys(reactions).forEach(key => {
-      if (reactions[key]) {
-        reactions[key] = reactions[key].filter(user => user !== currentUser);
-        if (reactions[key].length === 0) {
-          delete reactions[key];
-        }
-      }
-    });
-
-    // Если пользователь нажал на тот же эмодзи, который у него уже стоял — мы его просто убрали (шаг выше).
-    // Если нажал на новый — добавляем его имя в массив этого эмодзи
-    if (!userAlreadyHadThisEmoji) {
-      if (!reactions[emoji]) {
-        reactions[emoji] = [];
-      }
-      reactions[emoji].push(currentUser);
-    }
-
-    // Сохраняем обновленный пост на бэкенд
-    const commentIndex = this.post.comments!.findIndex(c => c.id === comment.id);
-    const updatedComments = [...this.post.comments!];
-    updatedComments[commentIndex] = { ...comment, reactions: { ...reactions } };
-
-    const updatedPost: TravelPost = { ...this.post, comments: updatedComments };
-
-    this.postService.updatePost(updatedPost).subscribe({
-      next: (savedPost) => {
-        this.post.comments = savedPost.comments;
+    this.postService.toggleCommentReaction(
+      this.post.id,
+      comment.id,
+      emoji
+    ).subscribe({
+      next: (updatedComment) => {
+        this.post.comments = (this.post.comments || []).map(c =>
+          c.id === updatedComment.id ? updatedComment : c
+        );
       },
       error: (err) => {
-        console.error('Ошибка обновления реакции:', err);
-        this.triggerError('Не удалось сохранить реакцию.');
+        console.error('Ошибка изменения реакции:', err);
+        this.triggerError(
+          err.error?.message || 'Не удалось изменить реакцию.'
+        );
       }
     });
   }
 
-  // Вспомогательный метод для шаблона: проверяет, кликнул ли текущий юзер на этот эмодзи
-  isEmojiSelectedByUser(comment: PostComment, emoji: string): boolean {
-    const currentUser = this.authService.currentUser?.username;
-    if (!currentUser || !comment.reactions || !comment.reactions[emoji]) return false;
-    return comment.reactions[emoji].includes(currentUser);
-  }
+    isEmojiSelectedByUser(comment: PostComment, emoji: string): boolean {
+      const currentUserId = this.authService.currentUser?.id;
 
-  // Получить массив выставленных смайликов (у которых есть хотя бы один клик), чтобы отрендерить их под текстом
+      if (!currentUserId || !comment.reactions?.[emoji]) {
+        return false;
+      }
+
+      return comment.reactions[emoji].some(
+        userId => userId.toLowerCase() === currentUserId.toLowerCase()
+      );
+    }
+
   getActiveReactions(comment: PostComment): { emoji: string; count: number }[] {
     if (!comment.reactions) return [];
     return Object.keys(comment.reactions)
@@ -175,63 +161,69 @@ closeAllPickers(): void {
     this.editedCommentText = '';
   }
 
-  saveEditedComment(commentId: string): void {
-    if (!this.editedCommentText.trim() || !this.post.comments) return;
+    saveEditedComment(commentId: string): void {
+      const text = this.editedCommentText.trim();
 
-    const commentIndex = this.post.comments.findIndex(c => c.id === commentId);
-    if (commentIndex === -1) return;
+      if (!text) {
+        this.triggerError('Комментарий не может быть пустым');
+        return;
+      }
 
-    const originalComment = this.post.comments[commentIndex];
-    const normalizedNewText = this.editedCommentText.trim();
+      if (text.length > 1000) {
+        this.triggerError('Максимальная длина комментария — 1000 символов');
+        return;
+      }
 
-    if (originalComment.text === normalizedNewText) {
-      this.cancelEditComment();
-      return;
+      this.postService.updateComment(
+        this.post.id,
+        commentId,
+        text
+      ).subscribe({
+        next: (updatedComment) => {
+          this.post.comments = (this.post.comments || []).map(c =>
+            c.id === commentId
+              ? { ...updatedComment, isEdited: true }
+              : c
+          );
+
+          this.cancelEditComment();
+        },
+        error: (err) => {
+          this.showToast('Ошибка изменения комментария');
+          this.triggerError(
+            err.error?.message || 'Не удалось обновить комментарий.'
+          );
+        }
+      });
     }
 
-    const updatedComments = [...this.post.comments];
-    updatedComments[commentIndex] = {
-      ...updatedComments[commentIndex],
-      text: normalizedNewText,
-      date: this.getCurrentFormattedDateTime(),
-      isEdited: true
-    };
+    deleteComment(commentId: string): void {
+      if (!this.post.comments) return;
 
-    const updatedPost: TravelPost = { ...this.post, comments: updatedComments };
-
-    this.postService.updatePost(updatedPost).subscribe({
-      next: (savedPost) => {
-        this.post.comments = savedPost.comments;
-        this.cancelEditComment();
-      },
-      error: (err) => {
-        console.error('Ошибка изменения комментария:', err);
-        this.triggerError('Не удалось обновить комментарий.');
+      if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+        return;
       }
-    });
-  }
 
-  deleteComment(commentId: string): void {
-    if (!this.post.comments || !confirm('Вы уверены, что хотите удалить этот комментарий?')) return;
-
-    const updatedPost: TravelPost = {
-      ...this.post,
-      comments: this.post.comments.filter(c => c.id !== commentId)
-    };
-
-    this.postService.updatePost(updatedPost).subscribe({
-      next: (savedPost) => {
-        this.post.comments = savedPost.comments;
-      },
-      error: (err) => {
-        console.error('Ошибка удаления комментария:', err);
-        this.triggerError('Не удалось удалить комментарий.');
-      }
-    });
-  }
+      this.postService.deleteComment(
+        this.post.id,
+        commentId
+      ).subscribe({
+        next: () => {
+          this.post.comments = this.post.comments!.filter(
+            c => c.id !== commentId
+          );
+        },
+        error: (err) => {
+          this.showToast('Ошибка удаления комментария');
+          this.triggerError(
+            err.error?.message || 'Не удалось удалить комментарий.'
+          );
+        }
+      });
+    }
 
   goToAuth(path: string): void {
-    this.closeParentModal.emit(); // Сигнализируем родительской модалке закрыться
+    this.closeParentModal.emit(); 
     this.router.navigate([path]);
   }
 
