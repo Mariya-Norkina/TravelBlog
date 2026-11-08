@@ -1,59 +1,216 @@
-# Laba5
+# TravelBlog 
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
+**TravelBlog** — веб-приложение для создания и просмотра публикаций о путешествиях. Пользователи могут делиться своими впечатлениями, публиковать истории, взаимодействовать с публикациями и управлять своим аккаунтом.
 
-## Development server
+Проект разработан с использованием Angular и ASP.NET Core и представляет собой Fullstack-приложение с авторизацией и базой данных PostgreSQL.
 
-To start a local development server, run:
+##  Демо
 
-```bash
-ng serve
-```
+- **Frontend:** [https://Mariya-Norkina.github.io/TravelBlog/](https://Mariya-Norkina.github.io/TravelBlog/)
+- **Backend API:** [https://travelblog-u2y1.onrender.com/api/posts](https://travelblog-u2y1.onrender.com/api/posts)
+- **GitHub:** [https://github.com/Mariya-Norkina/TravelBlog](https://github.com/Mariya-Norkina/TravelBlog)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+##  Функциональность
 
-## Code scaffolding
+### Авторизация и управление аккаунтом
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Регистрация новых пользователей.
+- Авторизация с использованием логина и пароля.
+- JWT-аутентификация.
+- Сохранение токена авторизации.
+- Защита страниц и операций для авторизованных пользователей.
+- Изменение пароля.
+- Удаление аккаунта.
 
-```bash
-ng generate component component-name
-```
+### Публикации
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Создание публикаций о путешествиях.
+- Просмотр списка публикаций.
+- Просмотр подробной информации о публикации.
+- Удаление публикаций.
+- Работа с публикациями через REST API.
 
-```bash
-ng generate --help
-```
+### Взаимодействие с контентом
 
-## Building
+- Система комментариев.
+- Реакции на публикации и комментарии.
+- Отображение информации об авторах.
+- Использование аватаров пользователей.
 
-To build the project run:
+### Интерфейс
 
-```bash
-ng build
-```
+- Главная страница с несколькими тематическими секциями.
+- Страница блога.
+- Страницы регистрации и авторизации.
+- Модальные окна для работы с публикациями.
+- Поиск и фильтрация публикаций.
+- Адаптивная вёрстка.
+- Анимации интерфейса.
+- Компоненты библиотеки Taiga UI.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+##  Технологический стек
 
-## Running unit tests
+### Frontend
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- **Angular 20** — разработка пользовательского интерфейса.
+- **TypeScript** — типизация и логика приложения.
+- **HTML5 / CSS3 / SCSS** — структура и стилизация.
+- **Taiga UI** — UI-компоненты.
+- **Angular Router** — маршрутизация.
+- **Angular HttpClient** — взаимодействие с Backend.
+- **RxJS** — работа с асинхронными операциями.
+- **JWT** — авторизация запросов через HTTP Interceptor.
+
+### Backend
+
+- **C#**
+- **ASP.NET Core 8 Web API**
+- **Entity Framework Core**
+- **PostgreSQL**
+- **JWT Bearer Authentication**
+- **REST API**
+
+##  Тестирование
+
+В проекте предусмотрены модульные тесты Angular-компонентов.
+
+Для запуска тестов необходимо выполнить команду из корневой папки проекта:
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Также можно использовать команду:
 
 ```bash
-ng e2e
+npx ng test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🏗 Архитектура проекта
 
-## Additional Resources
+Приложение построено по клиент-серверной архитектуре.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Angular отвечает за интерфейс, маршрутизацию, пользовательские действия и отправку HTTP-запросов.
+- ASP.NET Core предоставляет REST API, обрабатывает бизнес-логику и выполняет операции с данными.
+- PostgreSQL используется для хранения пользователей, публикаций и связанных сущностей.
+- JWT применяется для аутентификации и авторизации пользователей.
+
+##  Структура проекта
+
+```text
+TravelBlog/
+│
+├── src/
+│   └── app/
+│       ├── layouts/
+│       ├── pages/
+│       ├── services/
+│       ├── shared/
+│       └── ...
+│
+├── backend/
+│   └── AngularBlog.Backend/
+│       ├── Controllers/
+│       ├── Entities/
+│       ├── Data/
+│       ├── Services/
+│       ├── Dockerfile
+│       └── Program.cs
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+│
+├── angular.json
+├── package.json
+└── README.md
+```
+
+##  Запуск проекта локально
+
+### Требования
+
+- Node.js 22
+- npm
+- .NET 8 SDK
+- PostgreSQL
+
+### 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/Mariya-Norkina/TravelBlog.git
+cd TravelBlog
+```
+
+### 2. Установка Frontend-зависимостей
+
+```bash
+npm install
+```
+
+### 3. Запуск Frontend
+
+```bash
+npx ng serve
+```
+
+После запуска приложение будет доступно по адресу:
+
+[http://localhost:4200/](http://localhost:4200/)
+
+### 4. Настройка Backend
+
+Для запуска Backend необходимо настроить строку подключения к PostgreSQL и секрет JWT.
+
+Используются следующие параметры конфигурации:
+
+```text
+ConnectionStrings__DefaultConnection
+JwtSettings__Secret
+```
+
+Секретные значения необходимо хранить в локальных переменных окружения или пользовательской конфигурации. Не следует публиковать их в GitHub.
+
+### 5. Запуск Backend
+
+Из корневой папки проекта:
+
+```bash
+dotnet run --project backend/AngularBlog.Backend/AngularBlog.Backend.csproj
+```
+
+##  Развёртывание
+
+Проект размещён с использованием облачных платформ:
+
+| Часть приложения | Платформа |
+|---|---|
+| Frontend | GitHub Pages |
+| Backend | Render |
+| Database | Neon PostgreSQL |
+| CI/CD | GitHub Actions |
+| Backend containerization | Docker |
+
+Frontend автоматически собирается и публикуется через GitHub Actions при отправке изменений в ветку `main`.
+
+Backend развёрнут в Docker-контейнере.
+
+##  Цель проекта
+
+**TravelBlog** — учебный Fullstack-проект, демонстрирующий навыки разработки клиентской и серверной частей веб-приложения. 
+Проект создан для практического изучения и применения современных технологий веб-разработки.
+
+В процессе разработки были реализованы:
+
+- Создание SPA-приложения на Angular.
+- Разработка REST API на ASP.NET Core.
+- Интеграция Frontend и Backend.
+- Работа с реляционной базой данных PostgreSQL.
+- Реализация JWT-аутентификации.
+- Обработка HTTP-запросов и ошибок.
+- Написание модульных тестов Angular-компонентов.
+- Развёртывание Fullstack-приложения в облаке.
+
+---
+
+
