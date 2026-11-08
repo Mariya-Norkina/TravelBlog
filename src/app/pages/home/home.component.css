@@ -7,7 +7,7 @@
   width: 100%;
   margin: 0;
   overflow-x: hidden;
-} 
+}
 
 @font-face {
   font-family: 'MyCustomFont';
@@ -17,7 +17,7 @@
 }
 
 .section-1 {
-  background-image: url('/assets/img/back12.jpg');
+  background-image: url('assets/img/back12.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -28,8 +28,8 @@
 
 .welcome-message {
   font-family: 'MyCustomFont', Arial, sans-serif;
-  font-size: 7em; 
-  color: rgb(255, 215, 86); 
+  font-size: 7em;
+  color: rgb(255, 215, 86);
   text-align: center;
   max-width: 40%;
   display: flex;
@@ -38,8 +38,8 @@
 
 .welcome-text {
   font-family: Arial, sans-serif;
-  font-size: 1.3em; 
-  color: rgb(255, 255, 255); 
+  font-size: 1.3em;
+  color: rgb(255, 255, 255);
   text-align: center;
   max-width: 40%;
   display: flex;
@@ -47,7 +47,7 @@
 }
 
 .section-2 {
-  background-image: url('/assets/img/back22.png');
+  background-image: url('assets/img/back22.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -64,15 +64,15 @@
 
 .text {
   font-family: Arial, sans-serif;
-  font-size: 1.3em; 
-  color: #ffffff; 
+  font-size: 1.3em;
+  color: #ffffff;
   text-align: justify;
   display: flex;
 }
 
 .star {
   color: rgb(255, 215, 86);
-  font-size: 2.3em; 
+  font-size: 2.3em;
 }
 
 .text-star-container {
@@ -120,7 +120,7 @@
 }
 
 h1 {
-  text-align: center; 
+  text-align: center;
   font-family: 'MyCustomFont';
   font-weight: 400;
   color: #5b7e30;
@@ -133,7 +133,7 @@ h1 {
   background-repeat: no-repeat;
   display: flex;
   flex-direction: row;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
   height: 100dvh;
   display: flex;
@@ -141,9 +141,9 @@ h1 {
 }
 
 .create-post-wrapper {
-  margin-left: 0; 
+  margin-left: 0;
   margin-top: 5%;
-  width: 50%;    
+  width: 50%;
   max-width: 500px;
   display: flex;
   justify-content: center;
@@ -176,37 +176,37 @@ h1 {
 
 .promo-hint-side {
   position: relative;
-  width: 50%;            
+  width: 50%;
   display: flex;
-  flex-direction: row;   
-  align-items: center;   
-  justify-content: center; 
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .text12 {
   font-family: Arial, sans-serif;
-  font-size: 1.6em; 
+  font-size: 1.6em;
   color: #6b8f0f;
-  text-align: center;      
+  text-align: center;
   line-height: 1.4;
-  max-width: 500px; 
-  margin-left: 5%;  
+  max-width: 500px;
+  margin-left: 5%;
 }
 
 .arrow {
-  position: static;      
+  position: static;
   width: 120px;
   height: auto;
   z-index: 3;
 
-  transform: rotate(140deg); 
+  transform: rotate(140deg);
   margin-left: 14%;
 }
 
 .promo-register-box {
   display: flex;
-  flex-direction: column; 
-  align-items: center; 
+  flex-direction: column;
+  align-items: center;
   width: 45%;
   text-align: center;
 }
@@ -214,7 +214,7 @@ h1 {
 .promo-register-box h2 {
   font-family: 'MyCustomFont', Arial, sans-serif;
   font-size: 2.4em;
-  color: #ffd756; 
+  color: #ffd756;
 
 }
 
@@ -232,12 +232,41 @@ h1 {
 
 #but2:hover {
   background-color: #c3b517;
-  transform: translateY(-2px); 
+  transform: translateY(-2px);
+}
+
+.blog-btn {
+  padding: 15px 35px;
+  background-color: #8fa065;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.blog-btn:hover {
+  background-color: #c3b517;
+  transform: translateY(-2px);
+}
+
+.blog-btn {
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+#but2 {
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 @media (max-width: 1280px) {
   .arrow {
-  left: 4%; 
+  left: 4%;
 }
 
 .create-post-wrapper {
@@ -248,22 +277,22 @@ h1 {
 @media (max-width: 768px) {
 
   .section {
-    height: auto; 
+    height: auto;
     min-height: 100vh;
     padding: 40px 20px;
     box-sizing: border-box;
-    flex-direction: column; 
+    flex-direction: column;
     justify-content: center;
     align-items: center;
   }
 
   .section-2 {
-  background-image: url('/assets/img/back233.png');
+  background-image: url('assets/img/back233.png');
    flex-direction: column;
   }
 
   .welcome-message {
-    font-size: 3.5em; 
+    font-size: 3.5em;
     max-width: 100%;
     margin-bottom: 20px;
   }
@@ -278,39 +307,39 @@ h1 {
   }
 
    #cretext {
-    margin-left: 0; 
+    margin-left: 0;
     font-size: 2em;
   }
 
   .text-star-container {
     max-width: 100%;
-    margin: 20px 0 ; 
+    margin: 20px 0 ;
     text-align: center;
 
   }
 
   .text {
-    text-align: justify; 
-    font-size: 1.1em;     
-    padding: 0 3%;       
+    text-align: justify;
+    font-size: 1.1em;
+    padding: 0 3%;
   }
 
   .image-group {
     width: 100%;
     margin-left: 0;
-    margin-top: 20px; 
+    margin-top: 20px;
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     justify-content: center;
-    align-items: center;              
-    gap: 15px;                        
+    align-items: center;
+    gap: 15px;
   }
 
   .image-group img {
-    width: 30%; 
-    height: 180px;         
-    object-fit: cover; 
-    border-radius: 8px;               
+    width: 30%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
   }
 
   .image-group img:nth-child(1),
@@ -321,74 +350,74 @@ h1 {
   }
 
   .image-group img:nth-child(1) {
-    transform: translateY(-15px);     
+    transform: translateY(-15px);
   }
 
   .image-group img:nth-child(2) {
-    transform: translateY(15px);      
+    transform: translateY(15px);
   }
 
   .image-group img:nth-child(3) {
-    transform: translateY(-15px);     
+    transform: translateY(-15px);
   }
 
   .section-3 {
-    height: auto;           
+    height: auto;
     min-height: 100dvh;
     display: flex;
-    flex-direction: column; 
-    justify-content: flex-start; 
-    padding: 130px 20px 40px 20px;    
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 130px 20px 40px 20px;
     box-sizing: border-box;
-    gap: 20px;              
-    background-image: url('/assets/img/back333.png');
+    gap: 20px;
+    background-image: url('assets/img/back333.png');
   }
 
   .promo-hint-side {
-    display: flex;          
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;    
-    width: 100%;            
-    margin-left: 0;         
+    align-items: center;
+    width: 100%;
+    margin-left: 0;
     text-align: center;
-    order: 1;               
-    gap: 10px;              
+    order: 1;
+    gap: 10px;
   }
 
   .text12 {
-    font-size: 1.3em;       
-    text-align: center;     
+    font-size: 1.3em;
+    text-align: center;
     max-width: 100%;
-    margin: 0;     
+    margin: 0;
     color: #ffffff;
-    order: 1;               
+    order: 1;
   }
 
   .arrow {
-    position: static;       
-    width: 40px;            
+    position: static;
+    width: 40px;
     height: auto;
-    margin: 0;              
-    order: 2;               
+    margin: 0;
+    order: 2;
 
-    transform: rotate(90deg); 
+    transform: rotate(90deg);
   }
 
   .create-post-wrapper {
-    width: 85%;             
-    max-width: 85%;                 
-    margin: 0 auto; 
-    height: 80%;            
-    order: 2;                
+    width: 85%;
+    max-width: 85%;
+    margin: 0 auto;
+    height: 80%;
+    order: 2;
   }
 
   .promo-section-wrapper {
-    flex-direction: column; 
-    justify-content: center; 
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 0;           
+    margin-top: 0;
     order: 3;
   }
 
@@ -396,7 +425,7 @@ h1 {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;     
+    align-items: center;
     text-align: center;
   }
 
@@ -406,7 +435,14 @@ h1 {
   }
 
   #but2 {
-    width: 100%; 
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 20px;
+    display: block;
+  }
+
+    .blog-btn {
+    width: 100%;
     max-width: 300px;
     padding: 12px 20px;
     display: block;

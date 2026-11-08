@@ -16,12 +16,12 @@ import { TuiNotificationService } from '@taiga-ui/core';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    FormsModule, 
-    TruncateWordsPipe, 
-    CreatePostComponent, 
-    PostCardComponent, 
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    TruncateWordsPipe,
+    CreatePostComponent,
+    PostCardComponent,
     PostModalComponent,
     TuiAnimated
   ],
@@ -30,7 +30,7 @@ import { TuiNotificationService } from '@taiga-ui/core';
 })
 export class LoginComponent implements OnInit {
   private readonly notifications = inject(TuiNotificationService);
-  
+
   userPostsPage: number = 1;
   likedPostsPage: number = 1;
   readonly cabinetPageSize: number = 3;
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
   editForm!: FormGroup;
   editPhotoPreviewUrl: string | null = null;
   editAdditionalPhotosUrls: string[] = [];
-  defaultAvatarUrl: string = '../../assets/img/profile.png';
+  defaultAvatarUrl: string = 'assets/img/profile.png';
 
   @ViewChild('editPhotoInput') editPhotoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('editGalleryInput') editGalleryInput!: ElementRef<HTMLInputElement>;
@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { justRegistered: boolean };
-    
+
     if (state && state.justRegistered) {
       this.showToast('Регистрация прошла успешно! Добро пожаловать!');
     }
@@ -83,7 +83,7 @@ ngOnInit(): void {
       this.showToast('Регистрация прошла успешно! Добро пожаловать!');
     }
 
-  
+
   if (this.authService.isLoggedIn()) {
     this.loadUserPosts();
     this.loadLikedPosts();
@@ -152,9 +152,9 @@ get totalLikedPostsPages(): number {
 
   onPostCreated(): void {
     this.showToast('Пост успешно добавлен!');
-    
+
     this.loadUserPosts();
-    
+
     setTimeout(() => {
       this.currentTab = 'liked';
     }, 2000);
@@ -193,7 +193,7 @@ get totalLikedPostsPages(): number {
       input.value = '';
       return;
     }
-    
+
     files.forEach(file => {
       if (file.size > 2 * 1024 * 1024) {
         alert(`Файл ${file.name} слишком большой (макс. 2MB)`);
@@ -221,7 +221,7 @@ get totalLikedPostsPages(): number {
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
-    
+
     if (file.size > 4 * 1024 * 1024) {
       alert('Файл слишком большой! Максимальный размер аватарки — 4MB.');
       input.value = '';
@@ -275,8 +275,8 @@ get totalLikedPostsPages(): number {
   }
 
   triggerAvatarUpload(event: Event): void {
-  event.stopPropagation(); 
-  
+  event.stopPropagation();
+
   if (this.avatarInput && this.avatarInput.nativeElement) {
     this.avatarInput.nativeElement.click();
   } else {
@@ -313,7 +313,7 @@ get totalLikedPostsPages(): number {
       this.authService.deleteAccount().subscribe({
         next: () => {
           this.showToast('Ваш профиль был успешно удален.');
-          this.logout(); 
+          this.logout();
         },
         error: (err) => {
           alert(err.error?.message || 'Не удалось удалить профиль.');
@@ -364,7 +364,7 @@ get totalLikedPostsPages(): number {
         .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
     };
     const postSlug = post.slug || generateSlugFn(post.title);
-    
+
     this.router.navigate(['/blog', postSlug], {
       state: { fromProfile: true }
     });

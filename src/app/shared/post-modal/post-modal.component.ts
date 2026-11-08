@@ -1,9 +1,9 @@
 import { Component, HostListener, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router'; 
+import { ActivatedRoute, Router } from '@angular/router';
 import { TravelPost, PostService } from '../../services/post.service';
 import { UserService } from '../../services/user.service';
-import { AuthService } from '../../services/auth.service'; 
+import { AuthService } from '../../services/auth.service';
 import { PostCommentsComponent } from '../comments/comments.component.';
 import { TuiAnimated } from '@taiga-ui/cdk';
 import { TuiNotificationService } from '@taiga-ui/core';
@@ -19,10 +19,10 @@ import { Title, Meta } from '@angular/platform-browser';
 export class PostModalComponent implements OnInit {
   private readonly notifications = inject(TuiNotificationService);
   @Input() post!: TravelPost;
-  isLoading: boolean = true; 
-  
+  isLoading: boolean = true;
+
   activeFullImageIndex: number | null = null;
-  authorAvatarUrl: string = '../../assets/img/profile.png';
+  authorAvatarUrl: string = 'assets/img/profile.png';
   authorTotalPostsCount: number = 0;
 
   constructor(
@@ -54,7 +54,7 @@ hideAuthorPopover(): void {
     if (this.post) {
     this.isLoading = false;
     this.loadAuthorStats();
-    return; 
+    return;
     }
     // 1. Считываем slug из адресной строки
     const postSlug = this.route.snapshot.paramMap.get('slug');
@@ -67,7 +67,7 @@ hideAuthorPopover(): void {
     // 2. Ищем пост в базе данных по совпадению slug
         this.postService.getPosts().subscribe({
       next: (allPosts: TravelPost[]) => {
-        
+
         // ВСПЛЫВАЮЩАЯ ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ ДЛЯ СТАРЫХ ПОСТОВ
         const makeSlug = (text: string) => {
           const cyr = {
@@ -81,12 +81,12 @@ hideAuthorPopover(): void {
         };
 
         // === УНИВЕРСАЛЬНЫЙ ПОИСК ПОСТА ===
-        const foundPost = allPosts.find(p => 
-          p.id === postSlug || 
-          p.slug === postSlug || 
+        const foundPost = allPosts.find(p =>
+          p.id === postSlug ||
+          p.slug === postSlug ||
           makeSlug(p.title) === postSlug
         );
-        
+
         if (!foundPost) {
           alert('Статья не найдена!');
           this.router.navigate(['/blog']);
@@ -116,11 +116,11 @@ hideAuthorPopover(): void {
         });
 
         if (this.post.viewsCount !== undefined) {
-          this.post.viewsCount++; 
+          this.post.viewsCount++;
         } else {
           this.post.viewsCount = 1;
         }
-        
+
         this.loadAuthorStats();
       },
       error: (err) => {
@@ -182,11 +182,11 @@ hideAuthorPopover(): void {
 
     goBackToBlog(): void {
       const navigationState = this.router.getCurrentNavigation()?.extras.state || window.history.state;
-      
+
       if (navigationState && navigationState.fromProfile) {
         this.router.navigate(['/login'], {
           state: { activeTab: 'liked' }
-        }); 
+        });
       } else {
         this.router.navigate(['/blog']);
       }

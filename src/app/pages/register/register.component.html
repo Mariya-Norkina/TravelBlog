@@ -1,7 +1,7 @@
 <body>
   <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="form">
-    <img src="../../../assets/img/cloud.png" tuiAnimated class="corner top-left anim-slide-right-safe-2s" alt="правый верхний угол">
-    <img src="../../../assets/img/back12.png" tuiAnimated class="corner bottom-right anim-slide-left-safe-2s" alt="левый правый угол">
+    <img src="assets/img/cloud.png" tuiAnimated class="corner top-left anim-slide-right-safe-2s" alt="правый верхний угол">
+    <img src="assets/img/back12.png" tuiAnimated class="corner bottom-right anim-slide-left-safe-2s" alt="левый правый угол">
       <h2>{{ isLoginMode ? 'Авторизация' : 'Регистрация' }}</h2>
 
     <label>
@@ -11,7 +11,7 @@
       <small *ngIf="isLoginMode && authForm.get('username')?.hasError('required')">
         Пожалуйста, введите логин или ID
       </small>
-      
+
       <ng-container *ngIf="!isLoginMode">
         <small *ngIf="authForm.get('username')?.hasError('required')">
           Имя пользователя обязательно для заполнения
@@ -39,7 +39,7 @@
         <small *ngIf="authForm.get('password')?.hasError('required')">
           Пароль обязателен для заполнения
         </small>
-        
+
         <ng-container *ngIf="authForm.get('password')?.value">
           <small *ngIf="isPasswordTooShort">
             • Пароль слишком короткий (минимум 8 знаков)<br>
