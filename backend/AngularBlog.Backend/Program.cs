@@ -18,7 +18,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularCorsPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(
+                "http://localhost:4200",
+                "https://Mariya-Norkina.github.io")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
