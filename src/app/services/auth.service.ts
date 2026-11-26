@@ -9,7 +9,7 @@ export interface AuthUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/auth';
+  private apiUrl = 'https://travelblog-api.duckdns.org';
 
   private userSubject = new BehaviorSubject<AuthUser | null>(null);
   user$ = this.userSubject.asObservable();

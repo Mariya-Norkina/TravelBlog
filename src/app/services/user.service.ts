@@ -12,7 +12,7 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/users';
+  private apiUrl = 'https://travelblog-api.duckdns.org';
 
   constructor(private http: HttpClient) {}
 
