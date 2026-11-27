@@ -31,7 +31,7 @@ export interface PostComment {
   providedIn: 'root'
 })
 export class PostService {
-  private apiUrl = 'https://travelblog-u2y1.onrender.com';
+  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/posts';
 
   constructor(private http: HttpClient) {}
 

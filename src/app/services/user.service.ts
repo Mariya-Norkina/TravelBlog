@@ -12,7 +12,7 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://travelblog-u2y1.onrender.com';
+  private apiUrl = 'https://travelblog-u2y1.onrender.com/api/users';
 
   constructor(private http: HttpClient) {}
 
